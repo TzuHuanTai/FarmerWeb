@@ -6,7 +6,6 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable } from 'rxjs';
 import { startWith, tap, map } from 'rxjs/operators';
-import { isNullOrUndefined } from 'util';
 
 import { Ctrl } from '../../../../interface/system_auth/ctrl';
 import { CtrlService } from '../../../../api/system_auth/ctrl.service';
@@ -114,15 +113,15 @@ export class CtrlTableComponent implements OnInit {
         const searchTerms: Ctrl = JSON.parse(filter);
 
         // 先預判是否有沒有值的欄位，無值不篩選進來
-        const judgedId: boolean = isNullOrUndefined(data.ctrlId) ?
+        const judgedId: boolean = (data.ctrlId === null || data.ctrlId === undefined) ?
             true : data.ctrlId.toString().indexOf(searchTerms.ctrlId.toString()) !== -1;
 
-        const judgedName: boolean = isNullOrUndefined(data.name) ?
+        const judgedName: boolean = (data.name === null || data.name === undefined) ?
             true : data.name.toString().toLowerCase().indexOf(searchTerms.name.toLowerCase()) !== -1;
 
         // Because of data.description may contain null, searchTerms without anything should not filter out this data
         const judgedDescription: boolean = searchTerms.description === '' ?
-            true : (isNullOrUndefined(data.description) ?
+            true : ((data.description === null || data.description === undefined) ?
                 false : data.description.toString().toLowerCase().indexOf(searchTerms.description.toLowerCase()) !== -1);
 
         // 交集為true者，才是要顯示的Dat

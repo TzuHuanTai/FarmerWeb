@@ -176,7 +176,7 @@ export class CheckService {
             // It seems to "_loadedConfig" would be gotten in the end of RecivableRoutingModule
             SharedService
                 .addDynamicPath(resolver, router.config, parentPath, childList);
-            renderRoutingUnsubscribe.next();
+            renderRoutingUnsubscribe.next(0);
             renderRoutingUnsubscribe.complete();
         }
     }

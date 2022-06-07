@@ -34,7 +34,7 @@ export class SystemComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.renderRoutingUnsubscribe.next();
+    this.renderRoutingUnsubscribe.next(0);
     this.renderRoutingUnsubscribe.complete();
   }
 }

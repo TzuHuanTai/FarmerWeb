@@ -61,16 +61,11 @@ export class NavMenuComponent implements OnInit {
     }
 
     ngOnInit() {
-        const options = {
-            // year: "numeric", month: "short", day: "numeric",
-            hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit',
-            // weekday: "short",
-        };
         // 1.直接設定param類型為Observable
         this.timeNow = new Observable<string>((observer: Subscriber<string>) => {
             setInterval(() => observer.next(
                 // 反應速度差不多
-                new Date().toLocaleTimeString('zh-TW', options)
+                new Date().toLocaleTimeString('zh-TW', {hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'})
             ), 1000);
         });
     }

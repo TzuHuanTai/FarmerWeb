@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GpioService } from '../../api/raspberry/rasp_gpio.service';
 
-import videojs from 'video.js';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -14,35 +13,12 @@ import { environment } from 'src/environments/environment';
 export class LiveComponent implements OnInit, OnDestroy {
     gpioCheckedObject: GpioCheckedObject = new GpioCheckedObject();
     player: any;
-    options: any = {
-        html5: {
-            hls: {
-                overrideNative: !videojs.browser.IS_SAFARI
-            }
-        },
-        width: 848,
-        height: 480,
-        controls: true,
-        preload: 'auto', // 預載：string；'auto'|'true'|'metadata'|'none'
-    };
 
     constructor(private gpioService: GpioService) {
     }
 
     ngOnInit() {
         this.initializeAllGpioStatus();
-        this.player = videojs('vid1', this.options, function onPlayerReady() {
-            videojs.log('Your player is ready!');
-
-            // In this context, `this` is the player that was created by Video.js.
-            // this.play();
-
-            // How about an event listener?
-            this.on('ended', function () {
-                videojs.log('Awww...over so soon?!');
-            });
-        });
-        this.player.src(environment.videoUrl);
     }
 
     ngOnDestroy() {

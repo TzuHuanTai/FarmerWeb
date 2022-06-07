@@ -6,10 +6,10 @@ import L from 'leaflet';
 import { GeoSearchControl, EsriProvider } from 'leaflet-geosearch';
 require('leaflet.markercluster');
 
-import * as icon from 'leaflet/dist/images/marker-icon.png';
-import * as iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import * as blueIcon from '../../icon/blue.png';
-import * as pinkIcon from '../../icon/pink.png';
+const icon = new URL( 'leaflet/dist/images/marker-icon.png', import.meta.url);
+const iconShadow = new URL( 'leaflet/dist/images/marker-shadow.png', import.meta.url);
+const blueIcon = new URL( '../../icon/blue.png', import.meta.url);
+const pinkIcon = new URL( '../../icon/pink.png', import.meta.url);
 import * as GEOdata from '../../geojson/custom.geo.json';
 
 import { DialogSupplyChainCreateComponent } from './dialog/dialog-supplychain-create.component';

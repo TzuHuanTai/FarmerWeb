@@ -6,7 +6,6 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable } from 'rxjs';
 import { startWith, map, tap } from 'rxjs/operators';
-import { isNullOrUndefined } from 'util';
 import { Action } from '../../../../interface/system_auth/action';
 import { ActionService } from '../../../../api/system_auth/action.service';
 
@@ -149,22 +148,22 @@ export class ActionTableComponent implements OnInit {
         const searchTerms: Action = JSON.parse(filter);
 
         // 先預判是否有沒有值的欄位，無值不篩選進來
-        const judgedActionId: boolean = isNullOrUndefined(data.actionId) ?
+        const judgedActionId: boolean = (data.actionId === null || data.actionId === undefined) ?
             true : data.actionId.toString().indexOf(searchTerms.actionId.toString()) !== -1;
 
-        const judgedName: boolean = isNullOrUndefined(data.name) ?
+        const judgedName: boolean = (data.name === null || data.name === undefined) ?
             true : data.name.toString().toLowerCase().indexOf(searchTerms.name.toLowerCase()) !== -1;
 
-        const judgedMethod: boolean = isNullOrUndefined(data.method) ?
+        const judgedMethod: boolean = (data.method === null || data.method === undefined) ?
             true : data.method.toString().toLowerCase().indexOf(searchTerms.method.toLowerCase()) !== -1;
 
-        const judgedControllerId: boolean = isNullOrUndefined(data.controllerId) ?
+        const judgedControllerId: boolean = (data.controllerId === null || data.controllerId === undefined) ?
             true : data.controllerId.toString().indexOf(searchTerms.controllerId.toString()) !== -1;
 
 
         // Because of data.description may contain null, searchTerms without anything should not filter out this data
         const judgedDescription: boolean = searchTerms.description === '' ?
-            true : (isNullOrUndefined(data.description) ?
+            true : ((data.description === null || data.description === undefined) ?
                 false : data.description.toString().toLowerCase().indexOf(searchTerms.description.toLowerCase()) !== -1);
 
         // 交集為true者，才是要顯示的Dat
