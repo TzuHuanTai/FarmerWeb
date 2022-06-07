@@ -69,6 +69,7 @@ export class SharedService {
     }
 
     constructor(private resolver: ComponentFactoryResolver) {
+        console.log(this.resolver);
         this.factories = Array.from(this.resolver['_factories'].values());
     }
 
