@@ -1,8 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GpioService } from '../../api/raspberry/rasp_gpio.service';
 
-import { environment } from 'src/environments/environment';
-
 @Component({
     selector: 'app-live',
     templateUrl: './live.component.html',
@@ -12,7 +10,6 @@ import { environment } from 'src/environments/environment';
 
 export class LiveComponent implements OnInit, OnDestroy {
     gpioCheckedObject: GpioCheckedObject = new GpioCheckedObject();
-    player: any;
 
     constructor(private gpioService: GpioService) {
     }
@@ -22,8 +19,7 @@ export class LiveComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
-        // 離開時釋放撥放器
-        this.player.dispose();
+
     }
 
     changeIntensityOfLed(value: number) {

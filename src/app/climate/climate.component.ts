@@ -112,7 +112,7 @@ export class ClimateComponent implements OnInit, AfterContentInit {
         pointFormat: '<b>{series.name}: {point.y:.2f}°C</b>'
       },
       series: [{
-        type: 'abands',
+        type: 'line',
         name: 'Temperature',
         data: []
       }],

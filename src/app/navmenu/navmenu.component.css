@@ -7,6 +7,10 @@ li.link-active a:focus {
     color: white; 
 }
 
+.navbar{
+    padding: 0.5rem 1rem;
+}
+
 .nav-time{
     color: white;
     float: right;
