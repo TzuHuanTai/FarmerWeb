@@ -63,6 +63,7 @@
 .drawer-content {
     padding-top: 60px;
     margin: 0;
+    background-color: black;
 }
 
 .drawer-side ul {
