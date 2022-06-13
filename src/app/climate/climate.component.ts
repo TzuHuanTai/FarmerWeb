@@ -25,6 +25,7 @@ import { iif } from 'rxjs';
 // declare var require: any;
 // 2.
 require('highcharts/highcharts-more')(Highcharts);
+require('highcharts/themes/dark-blue')(Highcharts);
 
 @Component({
   selector: 'app-climate',
@@ -55,7 +56,8 @@ export class ClimateComponent implements OnInit, AfterContentInit {
     const optionsA: Options = {
       chart: {
         // type: 'spline'
-        zoomType: 'x'
+        zoomType: 'x',
+        backgroundColor: 'black'
       },
       title: {
         text: 'Hourly temperatures'
@@ -122,7 +124,8 @@ export class ClimateComponent implements OnInit, AfterContentInit {
     const optionsB: Options = {
       chart: {
         // type: 'spline'
-        zoomType: 'x'
+        zoomType: 'x',
+        backgroundColor: 'black'
       },
       title: {
         text: 'Hourly Humidity'

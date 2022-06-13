@@ -63,7 +63,6 @@
 .drawer-content {
     padding-top: 60px;
     margin: 0;
-    background: white;
 }
 
 .drawer-side ul {
@@ -73,6 +72,7 @@
 
 .drawer-link {
     display: inline-block;
+    text-decoration: none;
 }
 
 .link-active {
