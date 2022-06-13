@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser'; // 沒加這列無法
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDropdown, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
@@ -10,8 +10,8 @@ import { NavMenuComponent } from './navmenu/navmenu.component';
 import { AppRoutingModule, AppRoutingComponents } from './app-routing.module';
 import { AuthInterceptor } from '../interceptor/auth.interceptor';
 import { SharedMaterialModule } from './shared-material.module';
-import { SystemComponents, SystemModule } from './system/system.module';
-import { MapComponents, MapModule } from './map/map.module';
+import { SystemComponents } from './system/system.module';
+import { MapComponents } from './map/map.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
@@ -33,6 +33,7 @@ import { environment } from '../environments/environment';
     ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
+    NgbDropdown,
     {
       provide: HTTP_INTERCEPTORS,  // 過濾封包
       useClass: AuthInterceptor,

@@ -1,49 +1,45 @@
 <nav class="navbar fixed-top navbar-expand-md navbar-dark bg-dark">
 
   <button mat-icon-button class="btn btn-link btn-drawer" (click)="drawerToggle()"
-      [style.display]="childMenuList.length > 0 ? 'inline': 'none'">
+      [hidden]="!hasChildMenu">
       <mat-icon>menu</mat-icon>
   </button>
 
   <a class="navbar-brand" href="#">Greenhouse</a>
 
-  <button class="navbar-toggler" type="button" data-toggle="dropdown" data-target="#navbarsExampleDefault"
-      aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+  <button class="navbar-toggler" type="button" (click)="isMenuCollapsed = !isMenuCollapsed">
       <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-      <ul class="navbar-nav mr-auto">
+  <div ngbNav class="collapse navbar-collapse" [ngbCollapse]="isMenuCollapsed">
+      <ul class="navbar-nav">
 
           <li *ngFor="let menuItem of menuList" class="nav-item" [routerLinkActive]="['link-active']">
-              <a class="nav-link" [routerLink]="menuItem?.path">
+              <a class="nav-link" [routerLink]="menuItem?.path" (click)="isMenuCollapsed = true">
                   <i class="fa fa-cloud" aria-hidden="true" style="color:white"></i>
                   {{menuItem?.menuText}}
               </a>
           </li>
 
-          <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" id="dropdown01" data-toggle="dropdown" aria-haspopup="true"
-                  aria-expanded="false">
+          <li class="nav-item" ngbDropdown>
+              <a href (click)="false" class="nav-link" ngbDropdownToggle>
                   <i class="fa fa-universal-access" aria-hidden="true" style="color:white"></i>
                   Sign
               </a>
-              <div class="dropdown-menu" aria-labelledby="dropdown01">
+              <div ngbDropdownMenu>
                   <div [hidden]="isSignIn">
-                      <a *ngFor="let signItem of signList" class="dropdown-item" [routerLink]="signItem?.path">
+                      <a *ngFor="let signItem of signList" ngbDropdownItem [routerLink]="signItem?.path" (click)="isMenuCollapsed = true">
                           {{signItem?.menuText}}
                       </a>
                   </div>
                   <div [hidden]="!isSignIn">
-                      <button class="dropdown-item" (click)="signOut()">Sign Out</button>
+                      <button ngbDropdownItem (click)="signOut(); isMenuCollapsed = true">Sign Out</button>
                   </div>
               </div>
           </li>
       </ul>
-      <div class="nav-time">
-          {{ account }}
-      </div>
-      <div class="nav-time">
+      <div class="nav-time ms-auto">
+          {{ account }} 
           現在時間
           {{ timeNow | async }}
       </div>

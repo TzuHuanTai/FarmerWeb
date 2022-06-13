@@ -13,8 +13,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { DialogMenuDeleteComponent } from './dialog/dialog-menu-delete.component';
 import { DialogMenuUpdateComponent } from './dialog/dialog-menu-update.component';
 import { DialogMenuCreateComponent } from './dialog/dialog-menu-create.component';
-import { isNullOrUndefined } from 'util';
-import value from '*.png';
 
 @Component({
   selector: 'system-menu',
@@ -200,27 +198,27 @@ export class MenuComponent implements OnInit {
     const searchTerms = JSON.parse(Filter);
 
     // 先預判是否有沒有值的欄位，無值不篩選進來
-    const judgedMenuId: boolean = isNullOrUndefined(Data.menuId) ?
+    const judgedMenuId: boolean = (Data.menuId === null || Data.menuId === undefined) ?
       true : Data.menuId.toString().toLowerCase().indexOf(searchTerms.menuId.toLowerCase()) !== -1;
 
-    const judgedPath: boolean = isNullOrUndefined(Data.path) ?
+    const judgedPath: boolean = (Data.path === null || Data.path === undefined) ?
       true : Data.path.toString().toLowerCase().indexOf(searchTerms.path.toLowerCase()) !== -1;
 
-    const judgedMenuText: boolean = isNullOrUndefined(Data.menuText) ?
+    const judgedMenuText: boolean = (Data.menuText === null || Data.menuText === undefined) ?
       true : Data.menuText.toString().toLowerCase().indexOf(searchTerms.menuText.toLowerCase()) !== -1;
 
-    const judgedSortNo: boolean = isNullOrUndefined(Data.sortNo) ?
+    const judgedSortNo: boolean = (Data.sortNo === null || Data.sortNo === undefined) ?
       true : Data.sortNo.toString().toLowerCase().indexOf(searchTerms.sortNo.toLowerCase()) !== -1;
 
-    const judgedSelector: boolean = isNullOrUndefined(Data.selector) ?
+    const judgedSelector: boolean = (Data.selector === null || Data.selector === undefined) ?
       true : Data.selector.toString().toLowerCase().indexOf(searchTerms.selector.toLowerCase()) !== -1;
 
-    const judgedComponent: boolean = isNullOrUndefined(Data.component) ?
+    const judgedComponent: boolean = (Data.component === null || Data.component === undefined) ?
       true : Data.component.toString().toLowerCase().indexOf(searchTerms.component.toLowerCase()) !== -1;
 
     // Because of data.rootMenuId may contain null, searchTerms without anything should not filter out this data
     const judgedRootMenuId: boolean = searchTerms.rootMenuId === '' ?
-      true : (isNullOrUndefined(Data.rootMenuId) ?
+      true : ((Data.rootMenuId === null || Data.rootMenuId === undefined) ?
         false : Data.rootMenuId.toString().toLowerCase().indexOf(searchTerms.rootMenuId.toLowerCase()) !== -1);
 
     // 交集為true者，才是要顯示的Dat

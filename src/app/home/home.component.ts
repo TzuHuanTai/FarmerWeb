@@ -12,6 +12,7 @@ require('highcharts/modules/exporting')(Highcharts);
 require('highcharts/modules/export-data')(Highcharts);
 // require('highcharts/modules/solid-gauge')(Highcharts);
 // require('highcharts/modules/variwide')(Highcharts);
+require('highcharts/themes/dark-blue')(Highcharts);
 
 @Component({
   selector: 'app-home',
@@ -92,7 +93,8 @@ export class HomeComponent implements OnInit, AfterContentInit, OnDestroy {
         plotBackgroundColor: null,
         plotBackgroundImage: null,
         plotBorderWidth: 0,
-        plotShadow: false
+        plotShadow: false,
+        backgroundColor: 'black',
       },
       title: {
         text: 'Realtime Temperature'
@@ -168,7 +170,8 @@ export class HomeComponent implements OnInit, AfterContentInit, OnDestroy {
         plotBackgroundColor: null,
         plotBackgroundImage: null,
         plotBorderWidth: 0,
-        plotShadow: false
+        plotShadow: false,
+        backgroundColor: 'black',
       },
       title: {
         text: 'Realtime Humidity'
@@ -242,7 +245,8 @@ export class HomeComponent implements OnInit, AfterContentInit, OnDestroy {
       chart: {
         type: 'spline',
         animation: true, // don't animate in old IE
-        marginRight: 10
+        marginRight: 10,
+        backgroundColor: 'black',
       },
 
       time: {

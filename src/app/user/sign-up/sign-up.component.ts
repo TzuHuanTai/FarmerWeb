@@ -8,7 +8,7 @@ import { Member } from '../../../interface/system_auth/member';
   styleUrls: ['./sign-up.component.css']
 })
 export class SignUpComponent implements OnInit {
-  user: Member;
+  user: Member = new Member();
   emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$';
 
   constructor() { }
@@ -22,13 +22,6 @@ export class SignUpComponent implements OnInit {
     if (form != null) {
       form.reset();
     }
-    // this.user = {
-    //   UserName: '',
-    //   Password: '',
-    //   Email: '',
-    //   FirstName: '',
-    //   LastName: ''
-    // }
   }
 
   onSubmit(form?: NgForm) {

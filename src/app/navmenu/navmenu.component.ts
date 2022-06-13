@@ -1,8 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDrawer } from '@angular/material/sidenav';
 import { SystemService } from '../../api/system_auth/system.service';
 import { VmMenu } from '../../interface/system_auth/vm_menu';
-import { AppRoutingModule } from '../app-routing.module';
 import { Router } from '@angular/router';
 import { SharedService, NavMenuService } from '../shared-service';
 import { Observable, Subscriber } from 'rxjs';
@@ -22,11 +21,11 @@ export class NavMenuComponent implements OnInit {
     timeNow: Observable<string>;
     drawer: MatDrawer;
     account: string;
-    @Input() childMenuList: VmMenu[];
+    hasChildMenu: boolean = false;
+    isMenuCollapsed: boolean = true;
 
     constructor(
         private router: Router,
-        private reRouting: AppRoutingModule,
         private systemService: SystemService,
         private sharedService: SharedService,
         private navMenuService: NavMenuService,
@@ -55,22 +54,21 @@ export class NavMenuComponent implements OnInit {
             }
         });
 
+        this.sharedService.childRoutesEmitted$.subscribe(([_, childMenusList]: [string, VmMenu[]]) => {
+            this.hasChildMenu = childMenusList.length > 0;
+        });
+
         this.navMenuService.getMenuDrawer().subscribe((drawer) => {
             this.drawer = drawer;
         });
     }
 
     ngOnInit() {
-        const options = {
-            // year: "numeric", month: "short", day: "numeric",
-            hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit',
-            // weekday: "short",
-        };
         // 1.直接設定param類型為Observable
         this.timeNow = new Observable<string>((observer: Subscriber<string>) => {
             setInterval(() => observer.next(
                 // 反應速度差不多
-                new Date().toLocaleTimeString('zh-TW', options)
+                new Date().toLocaleTimeString('zh-TW', { hourCycle: 'h23', hour: '2-digit', minute: '2-digit', second: '2-digit' })
             ), 1000);
         });
     }
@@ -88,13 +86,15 @@ export class NavMenuComponent implements OnInit {
     }
 
     private rebuildRoutes() {
-        this.systemService.getAllowedMenu().subscribe((result: VmMenu[]) => {
-            this.router.resetConfig(this.reRouting.processRoute(result));
-            this.menuList = result.filter(menu => !menu.path.startsWith('Sign'));
-            this.signList = result.filter(menu => menu.path.startsWith('Sign'));
-            this.sharedService.emitFullRoutes(result);
-        }, (error) => {
-            console.error(error);
+        this.systemService.getAllowedMenu().subscribe({
+            next: (result: VmMenu[]) => {
+                this.menuList = result.filter(menu => !menu.path.startsWith('Sign'));
+                this.signList = result.filter(menu => menu.path.startsWith('Sign'));
+                this.sharedService.emitFullRoutes(result);
+            },
+            error: (error) => {
+                console.error(error);
+            }
         });
     }
 }
