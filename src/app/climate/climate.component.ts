@@ -39,10 +39,19 @@ export class ClimateComponent implements OnInit, AfterContentInit {
   stations: StationInfo[];
   searchNum: number = 1000;
   selectedStations: StationInfo = new StationInfo();
-  humidityChart: Highcharts.Chart;
-  temperatureChart: Highcharts.Chart;
-  @ViewChild('humidityChart', { static: true }) humidityChartEle: ElementRef;
-  @ViewChild('temperatureChart', { static: true }) temperatureChartEle: ElementRef;
+  integratedChart: Highcharts.Chart;
+  seriesData: Highcharts.SeriesOptionsType[] = [{
+    type: 'spline',
+    name: 'Temperature',
+    data: [],
+    yAxis: 0
+  }, {
+    type: 'spline',
+    name: 'RH',
+    data: [],
+    yAxis: 1
+  }];
+  @ViewChild('integratedChart', { static: true }) integratedChartEle: ElementRef;
 
   constructor(
     private climateService: ClimateService,
@@ -52,86 +61,19 @@ export class ClimateComponent implements OnInit, AfterContentInit {
 
   ngOnInit() {
     const timezoneOffset: number = new Date().getTimezoneOffset();
-    // 設定Highstock屬性
-    const optionsA: Options = {
-      chart: {
-        // type: 'spline'
-        zoomType: 'x',
-        backgroundColor: 'black'
-      },
-      title: {
-        text: 'Hourly temperatures'
-      },
-      rangeSelector: {
-        buttons: [{
-          type: 'day',
-          count: 3,
-          text: '3d'
-        }, {
-          type: 'week',
-          count: 1,
-          text: '1w'
-        }, {
-          type: 'month',
-          count: 1,
-          text: '1m'
-        }, {
-          type: 'month',
-          count: 6,
-          text: '6m'
-        }, {
-          type: 'year',
-          count: 1,
-          text: '1y'
-        }, {
-          type: 'all',
-          text: 'All'
-        }],
-        selected: 2
-      },
-      xAxis: {
-        type: 'datetime', // 'categories'/*: ['Apples', 'Bananas', 'Oranges']*/
-        dateTimeLabelFormats: { // don't display the dummy year
-          day: '%b. %e',
-          week: '%b. %e',
-          month: '%b. %e',
-          year: '%Y',
-        },
-        title: {
-          text: 'Date'
-        }
-      },
-      yAxis: {
-        title: {
-          text: 'Temperature(°C)'
-        }
-      },
-      time: {
-        timezoneOffset: timezoneOffset,
-      },
-      tooltip: {
-        headerFormat: '<b>{point.x: %b.%e, %H:%M}</b><br>',
-        pointFormat: '<b>{series.name}: {point.y:.2f}°C</b>'
-      },
-      series: [{
-        type: 'line',
-        name: 'Temperature',
-        data: []
-      }],
-      credits: { enabled: false }
-    };
 
-    const optionsB: Options = {
+    const options: Options = {
       chart: {
-        // type: 'spline'
         zoomType: 'x',
         backgroundColor: 'black'
       },
-      title: {
-        text: 'Hourly Humidity'
-      },
+      title: { text: 'Temperature / Humidity' },
       rangeSelector: {
         buttons: [{
+          type: 'day',
+          count: 1,
+          text: '1d'
+        }, {
           type: 'day',
           count: 3,
           text: '3d'
@@ -155,53 +97,60 @@ export class ClimateComponent implements OnInit, AfterContentInit {
           type: 'all',
           text: 'All'
         }],
-        selected: 2
+        selected: 0
       },
       xAxis: {
-        type: 'datetime', // 'categories'/*: ['Apples', 'Bananas', 'Oranges']*/
-        dateTimeLabelFormats: { // don't display the dummy year
+        type: 'datetime',
+        tickPosition: 'inside',
+        dateTimeLabelFormats: {
           day: '%b. %e',
           week: '%b. %e',
           month: '%b. %e',
           year: '%Y',
         },
-        title: {
-          text: 'Date'
-        }
+        title: { text: 'Datetime' }
       },
-      yAxis: {
-        title: {
-          text: 'Relative Humidity(%)'
-        }
+      yAxis: [{
+        title: { text: 'Temperature (°C)' },
+        tickPosition: 'inside',
+        labels: { align: 'left' }
+      }, {
+        title: { text: 'Relative Humidity (%)' },
+        opposite: false,
+        tickPosition: 'inside',
+        labels: { align: 'right' }
+      }],
+      legend: {
+        enabled: true,
+        align: 'center',
+        verticalAlign: 'top',
+        layout: 'vertical',
+        floating: true
       },
-      time: {
-        timezoneOffset: timezoneOffset,
-      },
+      time: { timezoneOffset: timezoneOffset },
       tooltip: {
         headerFormat: '<b>{point.x: %b.%e, %H:%M}</b><br>',
         pointFormat: '<b>{series.name}: {point.y:.2f}%</b>'
       },
-      series: [{
-        type: 'spline',
-        name: 'RH',
-        data: []
-      }],
+      series: this.seriesData,
       credits: { enabled: false }
     };
 
-    // 初始化Highstock
-    this.temperatureChart = Highcharts.stockChart(this.temperatureChartEle.nativeElement, optionsA);
-    this.humidityChart = Highcharts.stockChart(this.humidityChartEle.nativeElement, optionsB);
+    // Initialize Highstock
+    this.integratedChart = Highcharts.stockChart(this.integratedChartEle.nativeElement, options);
   }
 
   ngAfterContentInit() {
-    this.stationInfoService.getStationInfo().subscribe((result: StationInfo[]) => {
-      this.stations = result;
-      // Default greenhouse own
-      this.selectedStations = this.stations.find(x => x.stationId === 0);
-      this.drawDataOnHighchart(this.selectedStations.stationId, this.searchNum);
-    }, (error) => {
-      console.error(error);
+    this.stationInfoService.getStationInfo().subscribe({
+      next: (result: StationInfo[]) => {
+        this.stations = result;
+        // Default greenhouse own
+        this.selectedStations = this.stations.find(x => x.stationId === 0);
+        this.drawDataOnHighchart(this.selectedStations.stationId, this.searchNum);
+      },
+      error: (error) => {
+        console.error(error);
+      }
     });
   }
 
@@ -220,23 +169,28 @@ export class ClimateComponent implements OnInit, AfterContentInit {
       () => !stationId || stationId === 0,
       this.climateService.getGreenhouseClimate(searchNum),
       this.climateService.getCwbClimate(stationId, searchNum),
-    ).subscribe((response: Climate[]) => {
-      this.drawLineHighcharts(
-        this.temperatureChart,
-        response.map(x => new LineChartData({ obsTime: x.obsTime, data: x.temperature }))
-      );
+    ).subscribe({
+      next: (response: Climate[]) => {
+        this.drawLineHighcharts(
+          this.integratedChart,
+          response.map(x => new LineChartData({ obsTime: x.obsTime, data: x.temperature })),
+          0
+        );
 
-      this.drawLineHighcharts(
-        this.humidityChart,
-        response.map(x => new LineChartData({ obsTime: x.obsTime, data: x.rh }))
-      );
-    }, (error) => {
-      console.error(error);
+        this.drawLineHighcharts(
+          this.integratedChart,
+          response.map(x => new LineChartData({ obsTime: x.obsTime, data: x.rh })),
+          1
+        );
+      },
+      error: (error) => {
+        console.error(error);
+      }
     });
   }
 
-  private drawLineHighcharts(chart: Highcharts.Chart, updateData: LineChartData[]) {
+  private drawLineHighcharts(chart: Highcharts.Chart, updateData: LineChartData[], index: number = 0): void {
     const insertData: any[][] = updateData.map(v => [new Date(v.obsTime).getTime(), v.data]);
-    chart.series[0].update({ type: 'spline', data: insertData }, true);
+    chart.series[index].update({ type: 'spline', data: insertData }, true);
   }
 }
