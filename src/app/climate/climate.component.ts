@@ -44,12 +44,20 @@ export class ClimateComponent implements OnInit, AfterContentInit {
     type: 'spline',
     name: 'Temperature',
     data: [],
-    yAxis: 0
+    yAxis: 0,
+    tooltip: {
+      headerFormat: '<b>{point.x: %b.%e, %H:%M}</b><br>',
+      pointFormat: '<b>{series.name}: {point.y:.2f} °C</b>'
+    }
   }, {
     type: 'spline',
     name: 'RH',
     data: [],
-    yAxis: 1
+    yAxis: 1,
+    tooltip: {
+      headerFormat: '<b>{point.x: %b.%e, %H:%M}</b><br>',
+      pointFormat: '<b>{series.name}: {point.y:.2f} %</b>'
+    }
   }];
   @ViewChild('integratedChart', { static: true }) integratedChartEle: ElementRef;
 
@@ -128,10 +136,6 @@ export class ClimateComponent implements OnInit, AfterContentInit {
         floating: true
       },
       time: { timezoneOffset: timezoneOffset },
-      tooltip: {
-        headerFormat: '<b>{point.x: %b.%e, %H:%M}</b><br>',
-        pointFormat: '<b>{series.name}: {point.y:.2f}%</b>'
-      },
       series: this.seriesData,
       credits: { enabled: false }
     };
