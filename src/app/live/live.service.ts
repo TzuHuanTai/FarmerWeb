@@ -1,34 +1,28 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class LiveService {
     private isConnectedSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    private sendMessageSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    private showRTCPeerSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-    private startRTCPeerSubject: BehaviorSubject<string> = new BehaviorSubject<string>("test");
+    private sendMessageSubject: Subject<string> = new Subject<string>();
+    private connectRTCPeerSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
     private rtcPeerStatusSubject: BehaviorSubject<RTCPeerConnectionState> = new BehaviorSubject<RTCPeerConnectionState>('new');
 
     isConnectedSubject$ = this.isConnectedSubject.asObservable();
     sendMessageSubject$ = this.sendMessageSubject.asObservable();
-    showRTCPeerSubject$ = this.showRTCPeerSubject.asObservable();
-    startRTCPeerSubject$ = this.startRTCPeerSubject.asObservable();
+    connectRTCPeerSubject$ = this.connectRTCPeerSubject.asObservable();
     rtcPeerStatusSubject$ = this.rtcPeerStatusSubject.asObservable();
 
     isConnected(isConnected: boolean) {
         this.isConnectedSubject.next(isConnected);
     }
 
-    sendMessage(isConnected: boolean) {
-        this.sendMessageSubject.next(isConnected);
+    sendMessage(msg: string) {
+        this.sendMessageSubject.next(msg);
     }
 
-    showRTCPeer(isConnected: boolean) {
-        this.showRTCPeerSubject.next(isConnected);
-    }
-
-    startRTCPeer(cameraValue: string) {
-        this.startRTCPeerSubject.next(cameraValue);
+    connectRTCPeer(start: boolean) {
+        this.connectRTCPeerSubject.next(start);
     }
 
     setRTCStatus(status: RTCPeerConnectionState) {

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, Input } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
+import { Subject, takeUntil } from 'rxjs';
 import { LiveService } from '../live.service';
 import { environment } from '../../../environments/environment';
 import '../../../extention/RTCPeerConnection';
@@ -14,15 +15,16 @@ export class WebrtcComponent implements OnInit, OnDestroy {
     @Input() signalingUrl: string = environment.signalingUrl;
 
     /** WebRTC element */
-    selectedCameraId: string;
     peerConnection: RTCPeerConnection;
     dataChannels: RTCDataChannel[] = [];
     reconnectingInterval: NodeJS.Timer;
+    forceInterruptInterval: NodeJS.Timer;
     signalingServer: signalR.HubConnection;
     @ViewChild('webrtcVideo', { static: true }) webrtcVideo: ElementRef<HTMLVideoElement>;
 
+    unsubscriber: Subject<boolean> = new Subject();
+
     constructor(private liveService: LiveService) {
-        console.info(this.signalingServer);
         this.signalingServer = new signalR.HubConnectionBuilder()
             .withUrl(this.signalingUrl)
             .configureLogging(signalR.LogLevel.Information)
@@ -31,54 +33,49 @@ export class WebrtcComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.liveService.startRTCPeerSubject$.subscribe((cameraId: string) => {
-            console.log('===========', cameraId);
-            this.selectedCameraId = cameraId;
-            if (cameraId) {
-                this.startRTCPeer(cameraId);
+        this.liveService.connectRTCPeerSubject$.pipe(takeUntil(this.unsubscriber)).subscribe((onoff: boolean) => {
+            console.log('==== connectRTCPeer ====', onoff);
+            if (onoff) {
+                this.startRTCPeer();
+                this.forceInterruptInterval = setInterval(() => {
+                    this.liveService.connectRTCPeer(false);
+                }, 20000);
             } else {
                 this.closeRTCPeer();
             }
         });
 
-        this.liveService.showRTCPeerSubject$.subscribe((res: boolean) => {
-            if (res) {
-                this.showRTCPeer();
-            }
-        });
-
-        this.liveService.sendMessageSubject$.subscribe((res: boolean) => {
-            if (res) {
-                this.sendMessage();
+        this.liveService.sendMessageSubject$.pipe(takeUntil(this.unsubscriber)).subscribe((msg: string) => {
+            if (msg) {
+                this.sendMessage(msg);
             }
         });
     }
 
     ngOnDestroy() {
         this.closeRTCPeer();
+        this.unsubscriber.next(true);
+        this.unsubscriber.complete();
     }
 
-    showRTCPeer() {
-        console.log('showRTCPeer: autoplay');
-        const promise = document.querySelector('video').play();
-
-        if (promise !== undefined) {
-            promise.then(_ => {
-                console.log('Autoplay started!');
-            }).catch(error => {
-                // Autoplay was prevented.
-                console.log('Autoplay error:', error);
-            });
-        }
-    }
-
-    startRTCPeer(cameraId: string) {
+    startRTCPeer() {
         if (this.peerConnection) {
             this.closeRTCPeer();
         }
 
-        if (cameraId || !this.peerConnection) {
-            this.peerConnection = this.createPeerConnection(cameraId);
+        if (!this.peerConnection) {
+            this.peerConnection = this.createPeerConnection();
+
+            let playPromise = this.webrtcVideo.nativeElement.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    // Automatic playback started!
+                    // Show playing UI.
+                }).catch(error => {
+                    // Auto-play was prevented
+                    // Show paused UI.
+                });
+            }
         }
     }
 
@@ -90,18 +87,15 @@ export class WebrtcComponent implements OnInit, OnDestroy {
 
         if (this.peerConnection) {
             this.peerConnection.close();
+            this.liveService.isConnected(false);
             this.liveService.setRTCStatus(this.peerConnection.connectionState);
         }
         this.peerConnection = null;
+        clearInterval(this.forceInterruptInterval);
     }
 
-    private createPeerConnection(cameraId: string): RTCPeerConnection {
-        const peer = new RTCPeerConnection(environment.peerConnectionConfig)
-            .setSignalingServer(this.signalingServer)
-            .setCamera(cameraId)
-            //.withListeningOffer()
-            .withStartOffer()
-            .build();
+    private createPeerConnection(): RTCPeerConnection {
+        const peer = new RTCPeerConnection(environment.peerConnectionConfig);
 
         peer.onicecandidate = ev => {
             if (peer.type == 'answer') {
@@ -132,37 +126,36 @@ export class WebrtcComponent implements OnInit, OnDestroy {
         peer.onconnectionstatechange = (ev) => {
             this.liveService.setRTCStatus(peer.connectionState);
             if (peer.connectionState === 'connected') {
-                clearInterval(this.reconnectingInterval);
-            }
-        };
-
-        peer.oniceconnectionstatechange = (ev) => {
-            if (peer.iceConnectionState === 'disconnected') {
-                this.closeRTCPeer();
-                // this.reconnectPeerConnection(cameraId);
+                clearInterval(this.forceInterruptInterval);
+                this.liveService.isConnected(true);
+            } else if (peer.connectionState === 'disconnected') {
+                // this.reconnectPeerConnection();
+                this.liveService.isConnected(false);
             }
         };
 
         peer.addTransceiver('video', { direction: 'recvonly' });
         peer.addTransceiver('audio', { direction: 'recvonly' });
 
-        return peer;
+        return peer.setSignalingUrl(this.signalingServer)
+            .listenTopics("offer")
+            .build();
     }
 
-    private reconnectPeerConnection(cameraId: string) {
+    private reconnectPeerConnection() {
         this.reconnectingInterval = setInterval(
             () => {
-                console.log(`WebRTC reconnect to ${cameraId}!!!`);
-                this.startRTCPeer(cameraId);
+                console.log(`WebRTC reconnect!!!`);
+                this.startRTCPeer();
             },
             5000,
         );
     }
 
-    private sendMessage() {
+    private sendMessage(msg: string) {
         // todo: send msg to server?
         this.dataChannels.forEach((v, i, _) => {
-            v.send(`${i} hello server, nice to meet you :)`);
+            v.send(`${i} hello server :) => ${msg}`);
         });
     }
 
