@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { GpioService } from '../../api/raspberry/rasp_gpio.service';
+import { LiveService } from './live.service';
 
 @Component({
     selector: 'app-live',
@@ -9,17 +10,42 @@ import { GpioService } from '../../api/raspberry/rasp_gpio.service';
 })
 
 export class LiveComponent implements OnInit, OnDestroy {
+    isWebrtcConnected: boolean = false;
+    webrtcButtonLabel: string = 'Start';
+    webrtcButtonEnable: boolean = true;
     gpioCheckedObject: GpioCheckedObject = new GpioCheckedObject();
 
-    constructor(private gpioService: GpioService) {
+    constructor(
+        private gpioService: GpioService,
+        private liveService: LiveService,
+    ) {
     }
 
     ngOnInit() {
         this.initializeAllGpioStatus();
+
+        this.subscribeWebrtcIsConnected();
     }
 
     ngOnDestroy() {
 
+    }
+
+    subscribeWebrtcIsConnected() {
+        this.liveService.isConnectedSubject$.subscribe((onoff: boolean) => {
+            this.isWebrtcConnected = onoff;
+            if (onoff) {
+                this.webrtcButtonLabel = 'Stop';
+            } else {
+                this.webrtcButtonLabel = 'Start';
+            }
+            this.webrtcButtonEnable = true;
+        });
+    }
+
+    switchWebrtc(onoff: boolean) {
+        this.webrtcButtonEnable = false;
+        this.liveService.connectRTCPeer(onoff)
     }
 
     changeIntensityOfLed(value: number) {
@@ -44,7 +70,7 @@ export class LiveComponent implements OnInit, OnDestroy {
     initializeAllGpioStatus() {
         this.gpioService.getAllGpioStatus().subscribe(gpioStatus => {
             gpioStatus.forEach(x => {
-                switch(x.pin._gpio){
+                switch (x.pin._gpio) {
                     case 20:
                         this.gpioCheckedObject.isCheckedFan = Boolean(x.value);
                         console.log(20, this.gpioCheckedObject.isCheckedFan);
@@ -57,12 +83,12 @@ export class LiveComponent implements OnInit, OnDestroy {
                         break;
                 }
             });
-            
+
         });
     }
 }
 
-class GpioCheckedObject{
+class GpioCheckedObject {
     isCheckedLed: boolean = false;
     isCheckedFan: boolean = false;
 }

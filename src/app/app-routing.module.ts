@@ -8,8 +8,6 @@ import { HomeComponent } from './home/home.component';
 import { UserComponents } from './user/user.module';
 // 統計
 import { StatisticsComponent } from './statistics/statistics.component';
-// 直播
-import { LiveComponent } from './live/live.component';
 
 // ----ViewModel----//
 import { SignInComponent } from './user/sign-in/sign-in.component';
@@ -36,9 +34,6 @@ export const AppRoutingComponents = [
 
   // 統計
   StatisticsComponent,
-
-  // 直播
-  LiveComponent,
 ];
 
 /**
@@ -51,7 +46,7 @@ const routes: Routes = [
     pathMatch: 'full'
   }, {
     path: 'Live',
-    component: LiveComponent,
+    loadChildren: () => import('./live/live.module').then(m => m.liveModule),
     pathMatch: 'full'
   }, {
     path: 'Climate',

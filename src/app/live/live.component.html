@@ -1,22 +1,33 @@
-<video id=vid1 class="streaming-video">
-</video>
+<video-webrtc></video-webrtc>
 
 <div class="control-panel">
     <table>
         <thead>
             <tr>
-                <th>項目</th>
-                <th>開關</th>
+                <th>Items</th>
+                <th>Switchs</th>
             </tr>
         </thead>
         <tbody>
             <!--todo : 之後改從database抓，ngFor呈現-->
             <tr>
                 <td>
+                    Live Video
+                </td>
+                <td>
+                    <button mat-raised-button color="primary" (click)="switchWebrtc(!isWebrtcConnected)"
+                        [disabled]="!webrtcButtonEnable">{{ webrtcButtonLabel }} 
+                        <mat-spinner class="spinner" [diameter]="20" [hidden]="webrtcButtonEnable"></mat-spinner>
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     LED Switch
                 </td>
                 <td>
-                    <mat-slide-toggle class="example-margin" [(ngModel)]="gpioCheckedObject.isCheckedLed" (change)="setGpio(21, $event.checked)">
+                    <mat-slide-toggle class="example-margin" [(ngModel)]="gpioCheckedObject.isCheckedLed"
+                        (change)="setGpio(21, $event.checked)">
                     </mat-slide-toggle>
                 </td>
             </tr>
@@ -25,7 +36,8 @@
                     Cooling Fans
                 </td>
                 <td>
-                    <mat-slide-toggle class="example-margin" [(ngModel)]="gpioCheckedObject.isCheckedFan" (change)="setGpio(20, $event.checked)">
+                    <mat-slide-toggle class="example-margin" [(ngModel)]="gpioCheckedObject.isCheckedFan"
+                        (change)="setGpio(20, $event.checked)">
                     </mat-slide-toggle>
                 </td>
             </tr>
@@ -34,10 +46,7 @@
                     LED Light Intensity
                 </td>
                 <td>
-                    <mat-slider
-                        class="example-margin"
-                        [thumbLabel]="true"
-                        [tickInterval]="'auto'"
+                    <mat-slider class="example-margin" [thumbLabel]="true" [tickInterval]="'auto'"
                         (change)="changeIntensityOfLed($event.value)">
                     </mat-slider>
                 </td>

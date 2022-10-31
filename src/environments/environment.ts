@@ -6,10 +6,14 @@
 // "ng build" or "ng serve" only
 export const environment = {
   production: false,
-  authUrl: location.protocol === 'http:' ? `http://richard-greenhouse:5080/api` : `http://richard-greenhouse:5443/api`,
-  greenhouseUrl: location.protocol === 'http:' ? `http://richard-greenhouse:6080/api` : `http://richard-greenhouse:6443/api`,
-  sensorHubUrl: location.protocol === 'http:' ? `http://richard-greenhouse:6080/SensorHub` : `http://richard-greenhouse:6443/api`,
-  raspGpioUrl: `http://richard-greenhouse:3080/gpio`,
-  raspPwmUrl: `http://richard-greenhouse:3080/pwm`,
+  authUrl: location.protocol === 'http:' ? `http://greenhouse:5080/api` : `https://greenhouse:5443/api`,
+  greenhouseUrl: location.protocol === 'http:' ? `http://greenhouse:6080/api` : `https://greenhouse:6443/api`,
+  sensorHubUrl: location.protocol === 'http:' ? `http://greenhouse:6080/SensorHub` : `https://greenhouse:6443/SensorHub`,
+  signalingUrl: location.protocol === 'http:' ? `http://greenhouse:6080/SignalingServer` : `https://greenhouse:6443/SignalingServer`,
+  raspGpioUrl: `http://greenhouse:3080/gpio`,
+  raspPwmUrl: `http://greenhouse:3080/pwm`,
   appId: 0,
+  peerConnectionConfig: {
+    'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]
+  },
 };
