@@ -11,6 +11,7 @@ import { LiveService } from './live.service';
 
 export class LiveComponent implements OnInit, OnDestroy {
     isWebrtcConnected: boolean = false;
+    isRecording: boolean = false;
     webrtcButtonLabel: string = 'Start';
     webrtcButtonEnable: boolean = true;
     gpioCheckedObject: GpioCheckedObject = new GpioCheckedObject();
@@ -38,6 +39,7 @@ export class LiveComponent implements OnInit, OnDestroy {
                 this.webrtcButtonLabel = 'Stop';
             } else {
                 this.webrtcButtonLabel = 'Start';
+                this.isRecording = false;
             }
             this.webrtcButtonEnable = true;
         });
@@ -46,6 +48,12 @@ export class LiveComponent implements OnInit, OnDestroy {
     switchWebrtc(onoff: boolean) {
         this.webrtcButtonEnable = false;
         this.liveService.connectRTCPeer(onoff)
+    }
+
+    recordVideo(onoff: boolean) {
+        // TODO: modify the value after making sure receive the success response
+        this.isRecording = onoff;
+        this.liveService.recordVideo(onoff);
     }
 
     changeIntensityOfLed(value: number) {
