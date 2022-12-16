@@ -23,10 +23,22 @@
             </tr>
             <tr>
                 <td>
+                    Record
+                </td>
+                <td>
+                    <button mat-raised-button color="primary" (click)="recordVideo(!isRecording)"
+                        [disabled]="!isWebrtcConnected"> 
+                        <mat-icon class="record-video" [hidden]="isRecording">fiber_manual_record</mat-icon>
+                        <mat-icon class="blink" [hidden]="!isRecording">stop</mat-icon>
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>
                     LED Switch
                 </td>
                 <td>
-                    <mat-slide-toggle class="example-margin" [(ngModel)]="gpioCheckedObject.isCheckedLed"
+                    <mat-slide-toggle [(ngModel)]="gpioCheckedObject.isCheckedLed"
                         (change)="setGpio(21, $event.checked)">
                     </mat-slide-toggle>
                 </td>

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, Input } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { Subject, takeUntil } from 'rxjs';
+import { pipe, Subject, takeUntil } from 'rxjs';
 import { LiveService } from '../live.service';
 import { environment } from '../../../environments/environment';
 import '../../../extention/RTCPeerConnection';
@@ -16,7 +16,7 @@ export class WebrtcComponent implements OnInit, OnDestroy {
 
     /** WebRTC element */
     peerConnection: RTCPeerConnection;
-    dataChannels: RTCDataChannel[] = [];
+    dataChannel: RTCDataChannel;
     reconnectingInterval: NodeJS.Timer;
     forceInterruptInterval: NodeJS.Timer;
     signalingServer: signalR.HubConnection;
@@ -45,10 +45,9 @@ export class WebrtcComponent implements OnInit, OnDestroy {
             }
         });
 
-        this.liveService.sendMessageSubject$.pipe(takeUntil(this.unsubscriber)).subscribe((msg: string) => {
-            if (msg) {
-                this.sendMessage(msg);
-            }
+        this.liveService.recordingSubject$.pipe(takeUntil(this.unsubscriber)).subscribe((onoff: boolean) => {
+            // TODO: send json format
+            this.dataChannel?.send(onoff ? '1' : '0');
         });
     }
 
@@ -80,10 +79,7 @@ export class WebrtcComponent implements OnInit, OnDestroy {
     }
 
     closeRTCPeer() {
-        this.dataChannels.forEach(element => {
-            element.close();
-        });
-        this.dataChannels = [];
+        this.dataChannel?.close();
 
         if (this.peerConnection) {
             this.peerConnection.close();
@@ -96,6 +92,9 @@ export class WebrtcComponent implements OnInit, OnDestroy {
 
     private createPeerConnection(): RTCPeerConnection {
         const peer = new RTCPeerConnection(environment.peerConnectionConfig);
+
+        this.dataChannel = peer.createDataChannel("record_cmd_channel");
+        this.dataChannel.onmessage = (ev) => this.onReceiveMessage(ev);
 
         peer.onicecandidate = ev => {
             if (peer.type == 'answer') {
@@ -111,11 +110,11 @@ export class WebrtcComponent implements OnInit, OnDestroy {
             console.log("onconnectionstatechange: ", ev);
         };
 
-        peer.ondatachannel = (e: RTCDataChannelEvent) => {
-            console.log('conneceted channel: ' + e.channel.label);
-            e.channel.onmessage = (ev) => this.onReceiveMessage(ev);
-            this.dataChannels.push(e.channel);
-        };
+        // peer.ondatachannel = (e: RTCDataChannelEvent) => {
+        //     console.log('conneceted channel: ' + e.channel.label);
+        //     e.channel.onmessage = (ev) => this.onReceiveMessage(ev);
+        //     this.dataChannels.push(e.channel);
+        // };
 
         peer.ontrack = (ev) => {
             if (ev.type === 'track' && ev.track.kind === 'video') {
@@ -150,13 +149,6 @@ export class WebrtcComponent implements OnInit, OnDestroy {
             },
             5000,
         );
-    }
-
-    private sendMessage(msg: string) {
-        // todo: send msg to server?
-        this.dataChannels.forEach((v, i, _) => {
-            v.send(`${i} hello server :) => ${msg}`);
-        });
     }
 
     private onReceiveMessage(event: MessageEvent) {

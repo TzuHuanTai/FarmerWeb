@@ -128,7 +128,8 @@ RTCPeerConnection.prototype.listenTopics = function (type: "offer" | "answer") {
 RTCPeerConnection.prototype.connectServerPeer = function () {
     this.createOffer().then(
         desc => {
-            desc.sdp = removeCodec(desc.sdp, 'H264');
+            // desc.sdp = removeCodec(desc.sdp, 'H264');
+            // desc.sdp = removeCodec(desc.sdp, 'VP8');
             desc.sdp = removeCodec(desc.sdp, 'VP9');
             desc.sdp = removeCodec(desc.sdp, 'AV1');
             this.offerDescription(desc);

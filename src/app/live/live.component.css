@@ -13,3 +13,22 @@
     top: 25%;
     left: 25%;
 }
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.record-video {
+    color: white;
+}
+
+.blink {
+    color: red;
+    animation: blink 1s linear infinite;
+}
