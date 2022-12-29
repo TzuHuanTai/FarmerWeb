@@ -85,6 +85,7 @@ RTCPeerConnection.prototype.listenAnswerTopics = function () {
 
     this.signalingServer.on(SignalingTopic.AnswerICE, (recvCandidate: RTCIceCandidate) => {
         this.addIceCandidate(recvCandidate).then(() => {
+            console.log("Add remote ICE candidate: ",  recvCandidate);
         }, error => {
             console.log(`Failed to add Ice Candidate: ${error.toString()}`);
         });
@@ -107,6 +108,7 @@ RTCPeerConnection.prototype.listenOfferTopics = function () {
 
     this.signalingServer.on('OfferICE', (recvCandidate: RTCIceCandidate) => {
         this.addIceCandidate(recvCandidate).then(() => {
+            console.log("Add remote ICE candidate: ",  recvCandidate);
         }, error => {
             console.log(`Failed to add Ice Candidate: ${error.toString()}`);
         });
