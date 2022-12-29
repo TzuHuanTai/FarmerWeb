@@ -11,6 +11,12 @@ export const environment = {
   videoUrl: location.protocol === 'http:' ? `http://${window.location.hostname}/hls/test.m3u8` : `https://${window.location.hostname}/hls/test.m3u8`,
   appId: 0,
   peerConnectionConfig: {
-    'iceServers': [{ 'urls': 'stun:stun.l.google.com:19302' }]
+    'iceServers': [{
+      'urls': 'stun:stun.l.google.com:19302'
+    }, {
+      'urls': 'turn:174.127.170.158:3478?transport=tcp',
+      'username': 'webrtc',
+      'credential': 'webrtc'
+    }]
   },
 };
