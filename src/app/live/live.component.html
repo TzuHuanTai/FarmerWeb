@@ -1,68 +1,48 @@
-<video-webrtc></video-webrtc>
-
-<div class="control-panel">
-    <table>
-        <thead>
-            <tr>
-                <th>Items</th>
-                <th>Switchs</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!--todo : 之後改從database抓，ngFor呈現-->
-            <tr>
-                <td>
-                    Live Video
-                </td>
-                <td>
-                    <button mat-raised-button color="primary" (click)="switchWebrtc(!isWebrtcConnected)"
-                        [disabled]="!webrtcButtonEnable">{{ webrtcButtonLabel }} 
-                        <mat-spinner class="spinner" [diameter]="20" [hidden]="webrtcButtonEnable"></mat-spinner>
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Record
-                </td>
-                <td>
-                    <button mat-raised-button color="primary" (click)="recordVideo(!isRecording)"
-                        [disabled]="!isWebrtcConnected"> 
-                        <mat-icon class="record-video" [hidden]="isRecording">fiber_manual_record</mat-icon>
-                        <mat-icon class="blink" [hidden]="!isRecording">stop</mat-icon>
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    LED Switch
-                </td>
-                <td>
-                    <mat-slide-toggle [(ngModel)]="gpioCheckedObject.isCheckedLed"
-                        (change)="setGpio(21, $event.checked)">
-                    </mat-slide-toggle>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    Cooling Fans
-                </td>
-                <td>
-                    <mat-slide-toggle class="example-margin" [(ngModel)]="gpioCheckedObject.isCheckedFan"
-                        (change)="setGpio(20, $event.checked)">
-                    </mat-slide-toggle>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    LED Light Intensity
-                </td>
-                <td>
-                    <mat-slider class="example-margin" [thumbLabel]="true" [tickInterval]="'auto'"
-                        (change)="changeIntensityOfLed($event.value)">
-                    </mat-slider>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+<div class="control-panel" #panel>
+    <div class="streaming-video">
+        <video-webrtc [codec]="selectedCodec"></video-webrtc>
+    </div>
+    <div class="control-buttons fullscreen">
+        <div class="btn-fullscreen">
+            <button mat-mini-fab color="primary" (click)="fullscreen(!isFullscreen)">
+                <mat-icon [hidden]="isFullscreen">fullscreen</mat-icon>
+                <mat-icon [hidden]="!isFullscreen">fullscreen_exit</mat-icon>
+            </button>
+        </div>
+        <div class="btn-streaming">
+            <button mat-mini-fab color="primary" (click)="switchWebrtc(!isWebrtcConnected)"
+                [disabled]="!isWebrtcButtonEnable">
+                <mat-icon [hidden]="isWebrtcConnecting">play_arrow</mat-icon>
+                <mat-icon [hidden]="!isWebrtcConnecting">play_disabled</mat-icon>
+                <mat-spinner class="spinner" [diameter]="20" [hidden]="isWebrtcButtonEnable"></mat-spinner>
+            </button>
+        </div>
+        <div class="btn-codecs">
+            <button mat-mini-fab color="primary" (click)="switchCodec()"
+                [disabled]="isWebrtcConnecting || !isWebrtcButtonEnable">{{ selectedCodec }}
+            </button>
+        </div>
+        <div class="btn-recording">
+            <button mat-mini-fab color="primary" (click)="recordVideo(!isRecording)" [disabled]="!isWebrtcConnected">
+                <mat-icon [hidden]="isRecording">fiber_manual_record</mat-icon>
+                <mat-icon class="blink" [hidden]="!isRecording">stop</mat-icon>
+            </button>
+        </div>
+        <div class="btn-led">
+            LED<br>
+            <mat-slide-toggle [(ngModel)]="gpioCheckedObject.isCheckedLed" (change)="setGpio(21, $event.checked)">
+            </mat-slide-toggle>
+        </div>
+        <div class="btn-led-intensity">
+            <mat-slider class="example-margin" [thumbLabel]="true" [tickInterval]="'auto'" [vertical]="isFullscreen"
+                (change)="changeIntensityOfLed($event.value)">
+            </mat-slider>
+        </div>
+        <div class="btn-fan">
+            Fan<br>
+            <mat-slide-toggle class="example-margin" [(ngModel)]="gpioCheckedObject.isCheckedFan"
+                (change)="setGpio(20, $event.checked)">
+            </mat-slide-toggle>
+        </div>
+    </div>
 </div>

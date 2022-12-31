@@ -4,6 +4,7 @@ import { pipe, Subject, takeUntil } from 'rxjs';
 import { LiveService } from '../live.service';
 import { environment } from '../../../environments/environment';
 import '../../../extention/RTCPeerConnection';
+import { Codecs } from '../../../extention/RTCPeerConnection';
 
 @Component({
     selector: 'video-webrtc',
@@ -12,6 +13,7 @@ import '../../../extention/RTCPeerConnection';
 })
 export class WebrtcComponent implements OnInit, OnDestroy {
     /** input parameter */
+    @Input() codec: Codecs;
     @Input() signalingUrl: string = environment.signalingUrl;
 
     /** WebRTC element */
@@ -138,6 +140,7 @@ export class WebrtcComponent implements OnInit, OnDestroy {
 
         return peer.setSignalingUrl(this.signalingServer)
             .listenTopics("offer")
+            .setCodec(this.codec)
             .build();
     }
 
