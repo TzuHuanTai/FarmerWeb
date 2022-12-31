@@ -1,6 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { GpioService } from '../../api/raspberry/rasp_gpio.service';
 import { LiveService } from './live.service';
+import { Codecs } from '../../extention/RTCPeerConnection';
 
 @Component({
     selector: 'app-live',
@@ -12,9 +13,13 @@ import { LiveService } from './live.service';
 export class LiveComponent implements OnInit, OnDestroy {
     isWebrtcConnected: boolean = false;
     isRecording: boolean = false;
-    webrtcButtonLabel: string = 'Start';
-    webrtcButtonEnable: boolean = true;
+    isFullscreen: boolean = false;
+    isWebrtcConnecting: boolean = false;
+    isWebrtcButtonEnable: boolean = true;
+    selectedCodec: Codecs = Codecs.H264;
     gpioCheckedObject: GpioCheckedObject = new GpioCheckedObject();
+
+    @ViewChild('panel', { static: true }) panel: ElementRef<HTMLDivElement>;
 
     constructor(
         private gpioService: GpioService,
@@ -23,37 +28,75 @@ export class LiveComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        const wrapperElement = document.getElementsByClassName('wrapper');
+        (wrapperElement[0] as HTMLElement).style.display = 'contents';
+
         this.initializeAllGpioStatus();
 
         this.subscribeWebrtcIsConnected();
+
+        document.onfullscreenchange = () => {
+            if (document.fullscreenElement) {
+                this.isFullscreen = true;
+            } else {
+                this.isFullscreen = false;
+            }
+        }
     }
 
     ngOnDestroy() {
-
+        const wrapperElement = document.getElementsByClassName('wrapper');
+        (wrapperElement[0] as HTMLElement).style.display = '';
     }
 
     subscribeWebrtcIsConnected() {
         this.liveService.isConnectedSubject$.subscribe((onoff: boolean) => {
             this.isWebrtcConnected = onoff;
             if (onoff) {
-                this.webrtcButtonLabel = 'Stop';
+                this.isWebrtcConnecting = true;
             } else {
-                this.webrtcButtonLabel = 'Start';
                 this.isRecording = false;
+                this.isWebrtcConnecting = false;
             }
-            this.webrtcButtonEnable = true;
+            this.isWebrtcButtonEnable = true;
         });
     }
 
     switchWebrtc(onoff: boolean) {
-        this.webrtcButtonEnable = false;
-        this.liveService.connectRTCPeer(onoff)
+        this.isWebrtcButtonEnable = false;
+        this.liveService.connectRTCPeer(onoff);
+    }
+
+    switchCodec() {
+        let found: boolean = false;
+        for (let item in Codecs) {
+            if (found) {
+                this.selectedCodec = Codecs[item];
+                return;
+            }
+            if (item === this.selectedCodec) {
+                found = true;
+            }
+        }
+        this.selectedCodec = Codecs.H264;
     }
 
     recordVideo(onoff: boolean) {
         // TODO: modify the value after making sure receive the success response
         this.isRecording = onoff;
         this.liveService.recordVideo(onoff);
+    }
+
+    fullscreen(onoff: boolean) {
+        if (onoff) {
+            if (this.panel.nativeElement.requestFullscreen) {
+                this.panel.nativeElement.requestFullscreen();
+            }
+        } else {
+            document.exitFullscreen();
+        }
+
+        this.isFullscreen = onoff;
     }
 
     changeIntensityOfLed(value: number) {
@@ -100,15 +143,3 @@ class GpioCheckedObject {
     isCheckedLed: boolean = false;
     isCheckedFan: boolean = false;
 }
-
-// function allowDrop(event){
-//     event.preventDefault();
-// }
-// function drag(event){
-//     event.dataTransfer.setData("text",event.currentTarget.id);
-// }
-// function drop(event){
-//     event.preventDefault();
-//     var data=event.dataTransfer.getData("text");
-//     event.currentTarget.appendChild(document.getElementById(data));
-// }

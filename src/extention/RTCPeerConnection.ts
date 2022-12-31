@@ -3,37 +3,54 @@ enum SignalingTopic {
     AnswerICE = 'AnswerICE',
     OfferSDP = 'OfferSDP',
     OfferICE = 'OfferICE',
-    SIGHTED_PROOF_OF_AGE_CARD = 'sighted_proof_of_age_card'
 }
 
-interface RTCPeerConnection {
-    type: "offer" | "answer";
-    connectionId: string;
-    signalingServer: signalR.HubConnection;
+enum Codecs {
+    H264 = 'H264',
+    VP8 = 'VP8',
+    VP9 = 'VP9',
+    AV1 = 'AV1'
+}
 
-    listenTopics(type: "offer" | "answer"): RTCPeerConnection;
-    build(): RTCPeerConnection;
-    setSignalingUrl(signalingServer: signalR.HubConnection): RTCPeerConnection;
-    
-    connectServerPeer(): void;
-    listenOfferTopics(): void;
-    listenAnswerTopics(): void;
-    offerLocalIceToRemote(candidate: RTCIceCandidate): void;
-    offerDescription(
-        description: RTCSessionDescriptionInit,
-        signalingServer: signalR.HubConnection,
-    ): void;
-    answerLocalIceToRemote(candidate: RTCIceCandidate): void;
-    answerDescription(
-        description: RTCSessionDescriptionInit,
-        signalingServer: signalR.HubConnection,
-    ): void;
+declare global {
+    interface RTCPeerConnection {
+        type: "offer" | "answer";
+        connectionId: string;
+        signalingServer: signalR.HubConnection;
+        codec: Codecs;
+
+        listenTopics(type: "offer" | "answer"): RTCPeerConnection;
+        build(): RTCPeerConnection;
+        setSignalingUrl(signalingServer: signalR.HubConnection): RTCPeerConnection;
+        setCodec(codec: Codecs): RTCPeerConnection;
+
+        connectServerPeer(): void;
+        listenOfferTopics(): void;
+        listenAnswerTopics(): void;
+        offerLocalIceToRemote(candidate: RTCIceCandidate): void;
+        offerDescription(
+            description: RTCSessionDescriptionInit,
+            signalingServer: signalR.HubConnection,
+        ): void;
+        answerLocalIceToRemote(candidate: RTCIceCandidate): void;
+        answerDescription(
+            description: RTCSessionDescriptionInit,
+            signalingServer: signalR.HubConnection,
+        ): void;
+    }
 }
 
 RTCPeerConnection.prototype.setSignalingUrl = function (
     signalingServer: signalR.HubConnection,
 ) {
     this.signalingServer = signalingServer;
+    return this;
+};
+
+RTCPeerConnection.prototype.setCodec = function (
+    codec: Codecs,
+) {
+    this.codec = codec;
     return this;
 };
 
@@ -85,7 +102,7 @@ RTCPeerConnection.prototype.listenAnswerTopics = function () {
 
     this.signalingServer.on(SignalingTopic.AnswerICE, (recvCandidate: RTCIceCandidate) => {
         this.addIceCandidate(recvCandidate).then(() => {
-            console.log("Add remote ICE candidate: ",  recvCandidate);
+            console.log("Add remote ICE candidate: ", recvCandidate);
         }, error => {
             console.log(`Failed to add Ice Candidate: ${error.toString()}`);
         });
@@ -98,9 +115,6 @@ RTCPeerConnection.prototype.listenOfferTopics = function () {
         this.setRemoteDescription(recvDesc);
         this.createAnswer().then(
             desc => {
-                desc.sdp = removeCodec(desc.sdp, 'H264');
-                desc.sdp = removeCodec(desc.sdp, 'VP9');
-                desc.sdp = removeCodec(desc.sdp, 'AV1');
                 this.answerDescription(desc);
             }
         );
@@ -108,7 +122,7 @@ RTCPeerConnection.prototype.listenOfferTopics = function () {
 
     this.signalingServer.on('OfferICE', (recvCandidate: RTCIceCandidate) => {
         this.addIceCandidate(recvCandidate).then(() => {
-            console.log("Add remote ICE candidate: ",  recvCandidate);
+            console.log("Add remote ICE candidate: ", recvCandidate);
         }, error => {
             console.log(`Failed to add Ice Candidate: ${error.toString()}`);
         });
@@ -130,10 +144,14 @@ RTCPeerConnection.prototype.listenTopics = function (type: "offer" | "answer") {
 RTCPeerConnection.prototype.connectServerPeer = function () {
     this.createOffer().then(
         desc => {
-            // desc.sdp = removeCodec(desc.sdp, 'H264');
-            // desc.sdp = removeCodec(desc.sdp, 'VP8');
-            desc.sdp = removeCodec(desc.sdp, 'VP9');
-            desc.sdp = removeCodec(desc.sdp, 'AV1');
+            if (!this.codec) {
+                this.codec = Codecs.H264;
+            }
+            for (let item in Codecs) {
+                if (item !== this.codec) {
+                    desc.sdp = removeCodec(desc.sdp, item);
+                }
+            }
             this.offerDescription(desc);
         }
     );
@@ -211,3 +229,5 @@ function removeCodec(orgsdp, codec) {
     }
     return internalFunc(orgsdp);
 }
+
+export { Codecs };
