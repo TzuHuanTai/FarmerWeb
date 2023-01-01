@@ -4,7 +4,7 @@
   "theme_color": "#FFFFFF",
   "background_color": "#000000",
   "display": "standalone",
-  "scope": "/",
+  "scope": "/FarmerWeb/",
   "start_url": "https://tzuhuantai.github.io/FarmerWeb/",
   "icons": [
     {
