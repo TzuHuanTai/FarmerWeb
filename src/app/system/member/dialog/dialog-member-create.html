@@ -1,34 +1,26 @@
-<h1 mat-dialog-title>新增帳戶</h1>
+<h1 mat-dialog-title>Create Account</h1>
 <div mat-dialog-content>
     <form [formGroup]="memberForm">
-
-        <mat-form-field class="insert-full-width formNum">
-            <input matInput type="text" formControlName="domain" placeholder="網域" required>
-        </mat-form-field>&nbsp;
-        <mat-checkbox formControlName="isActive">在職
+        <mat-checkbox formControlName="isActive">Active
         </mat-checkbox>
         <br>
         <mat-form-field class="insert-full-width">
-            <input matInput type="text" formControlName="firstName" placeholder="名字" required>
-        </mat-form-field> &nbsp;
-        <mat-form-field class="insert-full-width formNum">
-            <input matInput type="text" formControlName="lastName" placeholder="姓氏" required>
+            <input matInput type="text" formControlName="name" placeholder="Name" required>
         </mat-form-field>
         <br>
         <mat-form-field class="insert-full-width">
-            <input matInput #inputAcc type="text" maxlength="20" formControlName="account" placeholder="帳號" required>
+            <input matInput #inputAcc type="text" maxlength="20" formControlName="account" placeholder="Account" required>
             <mat-hint align="end">{{inputAcc.value?.length || 0}}/20</mat-hint>
         </mat-form-field>&nbsp;
 
         <mat-form-field class="insert-full-width">
-            <input matInput #inputPw type="text" maxlength="20" formControlName="password" placeholder="密碼" required>
+            <input matInput #inputPw type="text" maxlength="20" formControlName="password" placeholder="Password" required>
             <mat-hint align="end">{{inputPw.value?.length || 0}}/20</mat-hint>
         </mat-form-field>
         <br>
 
         <mat-form-field class="insert-full-width">
-            <input matInput #inputMail type="text" maxlength="40" formControlName="email" placeholder="Email" [errorStateMatcher]="matcher"
-                required>
+            <input matInput #inputMail type="text" maxlength="40" formControlName="email" placeholder="Email" [errorStateMatcher]="matcher">
             <mat-hint align="end">{{inputMail.value?.length || 0}}/40</mat-hint>
             <mat-error *ngIf="memberForm.hasError('email')">
                 Please enter a valid email address
@@ -38,6 +30,6 @@
     </form>
 </div>
 <div mat-dialog-actions>
-    <button mat-raised-button color="primary" (click)="onNoClick()">取消</button>
-    <button mat-raised-button color="primary" (click)="onYesClick(memberForm.value)" [disabled]="!memberForm.valid">確定新增</button>
+    <button mat-raised-button color="primary" (click)="onNoClick()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onYesClick(memberForm.value)" [disabled]="!memberForm.valid">Confirm</button>
 </div>

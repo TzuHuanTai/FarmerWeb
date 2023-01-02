@@ -12,11 +12,7 @@ export class IMemberRoleService {
 
     constructor(private http: HttpClient) { }
 
-    getIMemberRole() {
-        return this.http.get<IMemberRole[]>(`${environment.authUrl}/IMemberRoles`);
-    }
-
-    getOneIMemberRole(id: string) {
+    getIMemberRole(id: string) {
         return this.http.get<IMemberRole[]>(`${environment.authUrl}/IMemberRoles/${id}`);
     }
 

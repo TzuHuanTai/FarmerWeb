@@ -18,8 +18,7 @@ import { IMemberRoleService } from '../../../../api/system_auth/i_member_role.se
 export class DialogIMemberRoleComponent implements OnInit {
 
     memberDetial: Member;
-    iMemberRoleList: IMemberRole[];
-    allowedRole: IMemberRole[] = [];
+    allowedRole: IMemberRole[];
     treeRole: RoleGroupNode[] = [];
 
     /** Parameters of MatTreeFlatDataSource */
@@ -42,7 +41,7 @@ export class DialogIMemberRoleComponent implements OnInit {
         private iMemberRoleService: IMemberRoleService,
     ) {
         this.memberDetial = data[0];
-        this.iMemberRoleList = data[1];
+        this.allowedRole = data[1];
         this.treeRole = data[2];
 
         this.treeFlattener = new MatTreeFlattener(
@@ -63,8 +62,7 @@ export class DialogIMemberRoleComponent implements OnInit {
     ngOnInit() {
         /** 取出角色清單可用Memu清單
          *  先將database該角色資料show on the tree  */
-        this.iMemberRoleList.filter(x => x.account === this.memberDetial.account).forEach(y => {
-            this.allowedRole.push(y);
+        this.allowedRole.forEach(y => {
             this.checklistSelection.select(
                 this.treeControl.dataNodes.find(x => x.id === y.roleId)
             );
@@ -96,34 +94,30 @@ export class DialogIMemberRoleComponent implements OnInit {
 
         /** delete at subtractingOfOrigin */
         subtractingOfOrigin.forEach(roleId =>
-            this.deleteActionRole(this.memberDetial.account, roleId)
+            this.deleteMemberRole(this.memberDetial.account, roleId)
         );
 
         /** insert at subtractingOfNew */
         subtractingOfNew.forEach(roleId =>
-            this.postIActionRole(this.memberDetial.account, roleId)
+            this.postMemberRole(this.memberDetial.account, roleId)
         );
 
         this.dialogRef.close(true);
     }
 
-    postIActionRole(account: string, roleId: number) {
+    postMemberRole(account: string, roleId: number) {
         const data: IMemberRole = {
             account: account,
-            roleId: roleId
+            roleId: roleId,
         };
-        this.iMemberRoleService.postIMemberRole(data).subscribe((result: any) => {
-            // console.log(result);
-        }, (error) => {
-            console.log(error);
+        this.iMemberRoleService.postIMemberRole(data).subscribe({
+            error: error => console.log(error),
         });
     }
 
-    deleteActionRole(account: string, roleId: number) {
-        this.iMemberRoleService.deleteIMemberRole(account, roleId).subscribe((result: any) => {
-            // console.log(result);
-        }, (error) => {
-            console.log(error);
+    deleteMemberRole(account: string, roleId: number) {
+        this.iMemberRoleService.deleteIMemberRole(account, roleId).subscribe({
+            error: error => console.log(error),
         });
     }
 }

@@ -1,41 +1,24 @@
-<h1 mat-dialog-title>修改 {{memberDetail.firstName}}, 帳號={{memberDetail.account}}</h1>
-<div mat-dialog-content style="overflow: unset;">  
+<h1 mat-dialog-title>Modify {{memberDetail.account}} ({{memberDetail.name}})</h1>
+<div mat-dialog-content style="overflow: unset;">
     <form #memberForm="ngForm">
+        <mat-checkbox [(ngModel)]="memberDetail.isActive" name="isActive" [checked]="memberDetail.isActive">Active
+        </mat-checkbox>
+        <br>
+        <mat-form-field class="insert-full-width">
+            <input matInput type="text" [(ngModel)]="memberDetail.name" name="name" placeholder="Name" required>
+        </mat-form-field>
+        <br>
 
-        <mat-form-field class="insert-full-width formNum">
-                <input matInput type="text" [(ngModel)]="memberDetail.domain" name="domain" placeholder="網域" required>
-            </mat-form-field>&nbsp;
-            <mat-checkbox [(ngModel)]="memberDetail.isActive" name="isActive"  [checked]="memberDetail.isActive">在職
-            </mat-checkbox>
-            <br>
-            <mat-form-field class="insert-full-width">
-                <input matInput type="text"  [(ngModel)]="memberDetail.firstName" name="firstName" placeholder="名字" required>
-            </mat-form-field> &nbsp;
-            <mat-form-field class="insert-full-width formNum">
-                <input matInput type="text" [(ngModel)]="memberDetail.lastName" name="lastName" placeholder="姓氏" required>
-            </mat-form-field>
-            <br>
-            <mat-form-field class="insert-full-width">
-                <input matInput #inputAcc type="text" maxlength="20" [(ngModel)]="memberDetail.account" name="account" placeholder="帳號" required>
-                <mat-hint align="end">{{inputAcc.value?.length || 0}}/20</mat-hint>
-            </mat-form-field>&nbsp;
-    
-            <mat-form-field class="insert-full-width">
-                <input matInput #inputPw type="text" maxlength="20" [(ngModel)]="memberDetail.password" name="password" placeholder="密碼" required>
-                <mat-hint align="end">{{inputPw.value?.length || 0}}/20</mat-hint>
-            </mat-form-field>
-            <br>
-    
-            <mat-form-field class="insert-full-width">
-                <input matInput #inputMail type="text" maxlength="40" [(ngModel)]="memberDetail.email" name="email" placeholder="Email" [errorStateMatcher]="matcher"
-                    required>
-                <mat-hint align="end">{{inputMail.value?.length || 0}}/40</mat-hint>
-                <mat-error *ngIf="memberForm.hasError('email')">
-                    Please enter a valid email address
-                </mat-error>
-            </mat-form-field>
-            <br>
-     
+        <mat-form-field class="insert-full-width">
+            <input matInput #inputMail type="text" maxlength="40" [(ngModel)]="memberDetail.email" name="email"
+                placeholder="Email" [errorStateMatcher]="matcher">
+            <mat-hint align="end">{{inputMail.value?.length || 0}}/40</mat-hint>
+            <mat-error *ngIf="memberForm.hasError('email')">
+                Please enter a valid email address
+            </mat-error>
+        </mat-form-field>
+        <br>
+
     </form>
 </div>
 <div mat-dialog-actions>

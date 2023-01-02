@@ -6,47 +6,44 @@ import { Member } from '../../../../interface/system_auth/member';
 import { MemberService } from '../../../../api/system_auth/member.service';
 
 @Component({
-  selector: 'dialog-member-update',
-  templateUrl: 'dialog-member-update.html',
-  providers: [MemberService],
+    selector: 'dialog-member-update',
+    templateUrl: 'dialog-member-update.html',
+    providers: [MemberService],
 })
 
 export class DialogMemberUpdateComponent {
-  public memberDetail: Member;
+    public memberDetail: Member;
 
-  public matcher = new MyErrorStateMatcher();
+    public matcher = new MyErrorStateMatcher();
 
-  constructor(
-    public dialogRef: MatDialogRef<DialogMemberUpdateComponent>,
-    private memberService: MemberService,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-  ) {
-    this.memberDetail = this.data;
-  }
+    constructor(
+        public dialogRef: MatDialogRef<DialogMemberUpdateComponent>,
+        private memberService: MemberService,
+        @Inject(MAT_DIALOG_DATA) public data: any,
+    ) {
+        this.memberDetail = this.data;
+    }
 
-  onNoClick() {
-    this.dialogRef.close(false);
-  }
+    onNoClick() {
+        this.dialogRef.close(false);
+    }
 
-  onYesClick() {
-    this.putMenu(this.memberDetail.account, this.memberDetail);
-    this.dialogRef.close(true);
-  }
+    onYesClick() {
+        this.putMenu(this.memberDetail.account, this.memberDetail);
+        this.dialogRef.close(true);
+    }
 
-  putMenu(id: string, updatedMember: Member) {
-    this.memberService.putMember(id, updatedMember).subscribe((result: any) => {
-      // console.log(result);
-    }, (error) => {
-      console.log(error);
-    });
-  }
-
+    putMenu(id: string, updatedMember: Member) {
+        this.memberService.putMember(id, updatedMember).subscribe({
+            error: error => console.log(error),
+        });
+    }
 }
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class MyErrorStateMatcher implements ErrorStateMatcher {
-  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-    const isSubmitted = form && form.submitted;
-    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
-  }
+    isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+        const isSubmitted = form && form.submitted;
+        return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+    }
 }

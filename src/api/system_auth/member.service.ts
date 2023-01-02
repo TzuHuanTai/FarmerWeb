@@ -12,12 +12,8 @@ export class MemberService {
 
     constructor(private http: HttpClient) { }
 
-    getMember() {
+    getMembers() {
         return this.http.get<Member[]>(`${environment.authUrl}/Members`);
-    }
-
-    getOneMember(id: string) {
-        return this.http.get<Member>(`${environment.authUrl}/Members/${id}`);
     }
 
     postMember(body: Member) {

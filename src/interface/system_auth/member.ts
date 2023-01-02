@@ -1,8 +1,6 @@
 export class Member {
     account: string;
-    firstName: string;
-    lastName?: string;
-    domain?: string;
+    name: string;
     password?: string;
     email?: string;
     isActive: boolean;

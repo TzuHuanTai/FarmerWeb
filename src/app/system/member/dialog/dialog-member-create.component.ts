@@ -6,7 +6,6 @@ import { Member } from '../../../../interface/system_auth/member';
 import { MemberService } from '../../../../api/system_auth/member.service';
 
 @Component({
-    // moduleId: module.id,
     selector: 'dialog-member-create',
     templateUrl: 'dialog-member-create.html',
     styleUrls: ['../member.component.css'],
@@ -18,9 +17,7 @@ export class DialogMemberCreateComponent {
     matcher = new MyErrorStateMatcher();
 
     memberForm: FormGroup = new FormGroup({
-        domain: new FormControl(),
-        firstName: new FormControl(),
-        lastName: new FormControl(),
+        name: new FormControl(),
         deptId: new FormControl(),
         account: new FormControl(),
         password: new FormControl(),
@@ -31,9 +28,7 @@ export class DialogMemberCreateComponent {
     constructor(
         public dialogRef: MatDialogRef<DialogMemberCreateComponent>,
         private memberService: MemberService,
-    ) {
-
-    }
+    ) { }
 
     onNoClick() {
         this.dialogRef.close(false);
@@ -45,10 +40,8 @@ export class DialogMemberCreateComponent {
     }
 
     createMember(data: Member) {
-        this.memberService.postMember(data).subscribe((result: any) => {
-            // console.log(result);
-        }, (error) => {
-            console.log(error);
+        this.memberService.postMember(data).subscribe({
+            error: error => console.log(error),
         });
     }
 }
