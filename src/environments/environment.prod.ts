@@ -13,7 +13,7 @@ export const environment = {
     'iceServers': [{
       'urls': 'stun:stun.l.google.com:19302'
     }, {
-      'urls': 'turn:rich-greenhouse.ddns.net:3478?transport=tcp',
+      'urls': 'turn:174.127.170.158:3478?transport=tcp',
       'username': 'webrtc',
       'credential': 'webrtc'
     }]
