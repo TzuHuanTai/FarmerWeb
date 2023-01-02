@@ -30,7 +30,10 @@ import { environment } from '../environments/environment';
     AppRoutingModule,         // component 路徑樹狀結構
     BrowserAnimationsModule,  // angular material animation
     SharedMaterialModule,     // used material
-    ServiceWorkerModule.register('/ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('ngsw-worker.js', { 
+      enabled: environment.production,
+      registrationStrategy: "registerImmediately",
+    })
   ],
   providers: [
     NgbDropdown,
