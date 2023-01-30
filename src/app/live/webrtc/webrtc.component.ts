@@ -119,8 +119,9 @@ export class WebrtcComponent implements OnInit, OnDestroy {
         // };
 
         peer.ontrack = (ev) => {
-            if (ev.type === 'track' && ev.track.kind === 'video') {
-                this.webrtcVideo.nativeElement.srcObject = new MediaStream([ev.track]);
+            if (this.webrtcVideo.nativeElement.srcObject !== ev.streams[0]) {
+                this.webrtcVideo.nativeElement.srcObject = ev.streams[0];
+                console.log('received remote stream', ev);
             }
         };
 
