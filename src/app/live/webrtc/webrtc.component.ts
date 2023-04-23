@@ -1,10 +1,26 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, Input } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { pipe, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { LiveService } from '../live.service';
 import { environment } from '../../../environments/environment';
 import '../../../extention/RTCPeerConnection';
 import { Codecs } from '../../../extention/RTCPeerConnection';
+
+enum CommandType {
+    CONNECT,
+    RECORD,
+    STREAM,
+    UNKNOWN
+};
+
+class Command {
+    type: CommandType;
+    message: string;
+    constructor(type: CommandType, message: string) {
+        this.type = type;
+        this.message = message;
+    }
+}
 
 @Component({
     selector: 'video-webrtc',
@@ -43,13 +59,15 @@ export class WebrtcComponent implements OnInit, OnDestroy {
                     this.liveService.connectRTCPeer(false);
                 }, 20000);
             } else {
+                let cmd = new Command(CommandType.CONNECT, String(onoff));
+                this.dataChannel?.send(JSON.stringify(cmd));
                 this.closeRTCPeer();
             }
         });
 
         this.liveService.recordingSubject$.pipe(takeUntil(this.unsubscriber)).subscribe((onoff: boolean) => {
-            // TODO: send json format
-            this.dataChannel?.send(onoff ? '1' : '0');
+            let cmd = new Command(CommandType.RECORD, String(onoff));
+            this.dataChannel?.send(JSON.stringify(cmd));
         });
     }
 
@@ -95,7 +113,7 @@ export class WebrtcComponent implements OnInit, OnDestroy {
     private createPeerConnection(): RTCPeerConnection {
         const peer = new RTCPeerConnection(environment.peerConnectionConfig);
 
-        this.dataChannel = peer.createDataChannel("record_cmd_channel");
+        this.dataChannel = peer.createDataChannel("cmd_channel", { negotiated: true, ordered: true, id: 0 });
         this.dataChannel.onmessage = (ev) => this.onReceiveMessage(ev);
 
         peer.onicecandidate = ev => {
