@@ -1,7 +1,7 @@
 {
   "name": "Greenhouse",
   "short_name": "Greenhouse",
-  "theme_color": "#FFFFFF",
+  "theme_color": "#000000",
   "background_color": "#000000",
   "display": "standalone",
   "scope": "/",
