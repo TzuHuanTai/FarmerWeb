@@ -1,7 +1,38 @@
-:host(app-sign-in) { 
-    width:100% ;
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
 }
 
-.sign-in-panel{
-    padding: 5vw;
+.sign-in-panel {
+    padding: 3vw;
+}
+
+.outter-card {
+    margin-top: 10vh;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .outter-card {
+        width: 50%;
+    }
+}
+
+.text-center {
+    text-align: center;
+}
+
+label {
+    position: relative;
+    float: left;
+}
+
+.error-message {
+    color: darkorange;
+}
+
+.full-width {
+    width: 100%;
 }

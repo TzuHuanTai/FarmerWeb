@@ -1,23 +1,29 @@
-<div *ngIf="isLoginError" class="red-text center error-message">
-  <i class="material-icons">error</i> Incorrect account or password
+<div class="wrapper">
+  <mat-card id="card" class="outter-card text-center">
+    <mat-card-title>
+      <b>Sign In</b>
+    </mat-card-title>
+
+    <mat-card-content>
+      <form #loginForm="ngForm" class="sign-in-panel" (ngSubmit)="onSubmit(account.value, password.value)">
+        <label for="account">Username or Email</label><br>
+        <mat-form-field class="full-width">
+          <input matInput type="text" #account ngModel name="account" required>
+        </mat-form-field><br>
+
+        <label for="password">Password</label><br>
+        <mat-form-field class="full-width">
+          <input matInput [type]="hide ? 'password' : 'text'" #password ngModel name="password" required>
+          <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>
+        </mat-form-field><br>
+
+        <div *ngIf="isLoginError" class="error-message">
+          <p>*Incorrect account or password, Please try again.</p>
+        </div>
+
+        <button class="full-width" mat-raised-button color="primary" [disabled]="!loginForm.valid"
+          type="submit">Login</button>
+      </form>
+    </mat-card-content>
+  </mat-card>
 </div>
-<form #loginForm="ngForm" class="sign-in-panel" (ngSubmit)="onSubmit(account.value, password.value)">
-  <div class="row">
-    <i class="material-icons">face</i>帳號
-    <mat-form-field>
-      <input matInput type="text" #account ngModel name="account" placeholder="Please enter account" required>
-    </mat-form-field>
-  </div>
-  <div class="row">
-    <i class="material-icons">vpn_key</i>密碼
-    <mat-form-field>
-      <input matInput [type]="hide ? 'password' : 'text'" #password ngModel name="password"
-        placeholder="Please enter password" required>
-    </mat-form-field>
-    <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility' : 'visibility_off'}}</mat-icon>
-  </div>
-  <br>
-  <div class="row">
-    <button mat-raised-button [disabled]="!loginForm.valid" type="submit">Login</button>
-  </div>
-</form>

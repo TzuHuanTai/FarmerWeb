@@ -9,7 +9,6 @@ import { AuthService } from '../../../api/system_auth/auth.service';
   selector: 'app-sign-in',
   templateUrl: './sign-in.component.html',
   styleUrls: ['./sign-in.component.css'],
-  // providers: [AuthService] // 已在app.module.ts統一provide了
 })
 export class SignInComponent implements OnInit {
 
@@ -28,21 +27,22 @@ export class SignInComponent implements OnInit {
   }
 
   onSubmit(account: string, password: string) {
-    this.authService.userAuthentication(account, password).subscribe((data: any) => {
-      localStorage.setItem('account', account);
-      localStorage.setItem('userToken', data.access_token);
-      console.log('Sign in success!');
+    this.authService.userAuthentication(account, password).subscribe({
+      next: (data: any) => {
+        localStorage.setItem('account', account);
+        localStorage.setItem('userToken', data.access_token);
+        console.log('Sign in success!');
 
-      // 觸發事件，讓menu監聽此事件，並觸發rebuildMenu以動態產生選單
-      this.sharedService.emitUserLogin('sign-in onSubmitemit=>navmenu');
+        // 觸發事件，讓menu監聽此事件，並觸發rebuildMenu以動態產生選單
+        this.sharedService.emitUserLogin('sign-in onSubmitemit=>navmenu');
 
-      // 登入成功後重新導向至首頁
-      this.router.navigate(['/Home']);
-    }, (error: HttpErrorResponse) => {
-      console.log(error);
-      localStorage.removeItem('userToken');
-      this.isLoginError = true;
+        // 登入成功後重新導向至首頁
+        this.router.navigate(['/Home']);
+      }, error: (error: HttpErrorResponse) => {
+        console.log(error);
+        localStorage.removeItem('userToken');
+        this.isLoginError = true;
+      }
     });
   }
-
 }
