@@ -59,8 +59,10 @@ export class WebrtcComponent implements OnInit, OnDestroy {
                     this.liveService.connectRTCPeer(false);
                 }, 20000);
             } else {
-                let cmd = new Command(CommandType.CONNECT, String(onoff));
-                this.dataChannel?.send(JSON.stringify(cmd));
+                if (this.dataChannel?.readyState === 'open'){
+                    let cmd = new Command(CommandType.CONNECT, String(onoff));
+                    this.dataChannel.send(JSON.stringify(cmd));
+                }
                 this.closeRTCPeer();
             }
         });
@@ -148,7 +150,7 @@ export class WebrtcComponent implements OnInit, OnDestroy {
             if (peer.connectionState === 'connected') {
                 clearInterval(this.forceInterruptInterval);
                 this.liveService.isConnected(true);
-            } else if (peer.connectionState === 'disconnected') {
+            } else if (peer.connectionState === 'disconnected' || peer.connectionState === 'failed') {
                 // this.reconnectPeerConnection();
                 this.liveService.isConnected(false);
             }
