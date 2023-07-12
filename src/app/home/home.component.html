@@ -1,27 +1,37 @@
-<div class="HomePage">
-  <div class="Selection">
-    地點：
-    <select (change)="onSelect($event.target.value)" [value]="selectedStations.stationId">
-      <option *ngFor="let station of stations" value="{{station.stationId}}">
+<mat-card class="option-panel">
+  <mat-form-field>
+    <mat-label>Position</mat-label>
+    <mat-select (selectionChange)="onSelect($event.value)" [(value)]="selectedStations.stationId">
+      <mat-option *ngFor="let station of stations" [value]="station.stationId">
         {{station.name}}
-      </option>
-    </select>
-    <br>
-    <!--因為非同步的緣故，讀取值時可能data還沒傳來，so... Use safe navigation operator "?" -->
-    位置：{{selectedStations?.name}}
-    <br> 即時溫度：{{realtimeData?.temperature}} °C
-    <br> 即時濕度：{{realtimeData?.rh}} %
-    <br> 即時照度：{{realtimeData?.lux}} lux
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-card>
+
+<mat-card class="sensor-panel">
+  <div class="gauge-section">
+    <h3>Temperature</h3>
+    <div id="temperature" class="gauge"></div>
   </div>
-  <div class="Charts" *ngIf="realtimeData">
+  <div class="gauge-section">
+    <h3>Humidity</h3>
+    <div id="humidity" class="gauge"></div>
   </div>
-  <div class="highchart" #realtimeTempGauge>
-    Oops! There are some errors when loading temperatures...
+  <div>
+    <h3>Illuminance</h3>
+    <div id="illuminance" class="gauge"></div>
   </div>
-  <div class="highchart" #realtimeRhGauge>
+</mat-card>
+
+<mat-card class="chart-panel">
+  <div class="highchart" #tempChart>
+    Oops! There are some errors when loading relative temperature...
+  </div>
+  <div class="highchart" #humiChart>
     Oops! There are some errors when loading relative humidities...
   </div>
-  <div class="highchart" #realtimeLux>
-    Oops! There are some errors when loading relative humidities...
+  <div class="highchart" #luxChart>
+    Oops! There are some errors when loading relative illuminance...
   </div>
-</div>
+</mat-card>

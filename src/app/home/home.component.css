@@ -1,34 +1,91 @@
-
-
-.HomePage .Charts{
-    display: inline-block;/*讓div並排*/ 
-    vertical-align: top;/*就算個個div行數不同，也一律向上對齊*/
-}
-.HomePage .TestZone{
-    display: inline-block;/*讓div並排*/ 
-    vertical-align: top;/*就算個個div行數不同，也一律向上對齊*/
+.option-panel {
+    margin: 0.2rem 2rem;
 }
 
-
-.HomePage .highchart {
-    display: inline-block;/*讓div並排*/ 
-    vertical-align: top;/*就算個個div行數不同，也一律向上對齊*/
+.sensor-panel {
+    margin: 0 2rem;
+    display: grid;
+    text-align: center;
+    justify-content: space-evenly;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(3, 1fr);
 }
 
-/* On small screens, convert the nav menu to a vertical sidebar */
-    .highchart{
-        position: relative;
-        width:80%;
-        display: inline-block;
+.chart-panel {
+    position: relative;
+    margin: 2rem;
+    text-align: center;
+    justify-content: space-evenly;
+}
+
+.highchart {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.sensor-panel h3 {
+    margin: 1rem 0 0 0;
+    font-weight: bold;
+}
+
+@media (min-width: 600px) {
+    .sensor-panel {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(1, 1fr);
     }
-
-
-@media (min-width: 767px) {
-    .highchart{
-        position: relative;
-        width:20em;        
-        text-align: center; 
-    }
 }
 
-/* #draggable { width: 150px; height: 150px; padding: 0.5em;background-color: blueviolet } */
+:host ::ng-deep .rGauge {
+    width: 200px;
+    height: 145px;
+}
+
+:host ::ng-deep .rGauge-base {
+    stroke: #edebeb;
+    fill: none;
+}
+
+:host ::ng-deep .rGauge-progress {
+    fill: none;
+}
+
+:host ::ng-deep .rGauge-val {
+    font-weight: 700;
+    font-size: 1.3em;
+    fill: #b3b3b3;
+}
+
+:host ::ng-deep .rGauge-val#illuminance_val,
+:host ::ng-deep .rGauge-val#unit {
+    font-weight: 700;
+    font-size: 0.4em;
+    fill: white;
+}
+
+:host ::ng-deep .rGauge-min-val,
+:host ::ng-deep .rGauge-max-val {
+    fill: #b3b3b3;
+}
+
+:host ::ng-deep .vGauge {
+    width: 145px;
+    height: 145px;
+}
+
+:host ::ng-deep .vGauge-base {
+    fill: #edebeb;
+}
+
+:host ::ng-deep .vGauge-progress {}
+
+:host ::ng-deep .vGauge-val {
+    font-weight: 700;
+    font-size: 1.3em;
+    fill: #b3b3b3;
+}
+
+:host ::ng-deep .vGauge-min-val,
+:host ::ng-deep .vGauge-max-val {
+    fill: #b3b3b3;
+}
