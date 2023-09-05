@@ -2,12 +2,12 @@
 // ng serve --prod
 export const environment = {
   production: true,
-  authUrl: location.protocol === 'http:' ? `http://rich-greenhouse.ddns.net:5080/api` : `https://rich-greenhouse.ddns.net:5443/api`,
-  greenhouseUrl: location.protocol === 'http:' ? `http://rich-greenhouse.ddns.net:6080/api` : `https://rich-greenhouse.ddns.net:6443/api`,
-  sensorHubUrl: location.protocol === 'http:' ? `http://rich-greenhouse.ddns.net:6080/SensorHub` : `https://rich-greenhouse.ddns.net:6443/SensorHub`,
-  signalingUrl: location.protocol === 'http:' ? `http://rich-greenhouse.ddns.net:6080/SignalingServer` : `https://rich-greenhouse.ddns.net:6443/SignalingServer`,
-  raspGpioUrl: location.protocol === 'http:' ? `http://rich-greenhouse.ddns.net:3080/gpio` : `https://rich-greenhouse.ddns.net:3443/gpio`,
-  raspPwmUrl: location.protocol === 'http:' ? `http://rich-greenhouse.ddns.net:3080/pwm` : `https://rich-greenhouse.ddns.net:3443/pwm`,
+  authUrl: `https://rich-greenhouse.ddns.net/api`,
+  greenhouseUrl: `https://rich-greenhouse.ddns.net/api`,
+  sensorHubUrl: `https://rich-greenhouse.ddns.net/SensorHub`,
+  signalingUrl: `https://rich-greenhouse.ddns.net/SignalingServer`,
+  raspGpioUrl: `https://rich-greenhouse.ddns.net/gpio`,
+  raspPwmUrl: `https://rich-greenhouse.ddns.net/pwm`,
   appId: 0,
   peerConnectionConfig: {
     'iceServers': [{
