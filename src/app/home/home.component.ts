@@ -250,7 +250,7 @@ export class HomeComponent implements OnInit, AfterContentInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.connection.off;
+    this.connection.stop();
   }
 
   onSelect(stationId: number) {
