@@ -2,18 +2,18 @@
 // ng serve --prod
 export const environment = {
   production: true,
-  authUrl: `https://rich-greenhouse.ddns.net/api`,
-  greenhouseUrl: `https://rich-greenhouse.ddns.net/api`,
-  sensorHubUrl: `https://rich-greenhouse.ddns.net/SensorHub`,
-  signalingUrl: `https://rich-greenhouse.ddns.net/SignalingServer`,
-  raspGpioUrl: `https://rich-greenhouse.ddns.net/gpio`,
-  raspPwmUrl: `https://rich-greenhouse.ddns.net/pwm`,
+  authUrl: `https://${location.hostname}/api`,
+  greenhouseUrl: `https://${location.hostname}/api`,
+  sensorHubUrl: `https://${location.hostname}/SensorHub`,
+  signalingUrl: `https://${location.hostname}/SignalingServer`,
+  raspGpioUrl: `https://${location.hostname}/gpio`,
+  raspPwmUrl: `https://${location.hostname}/pwm`,
   appId: 0,
   peerConnectionConfig: {
     'iceServers': [{
       'urls': 'stun:stun.l.google.com:19302'
     }, {
-      'urls': 'turn:rich-greenhouse.ddns.net:3478?transport=tcp',
+      'urls': `turn:${location.hostname}:3478?transport=tcp`,
       'username': 'webrtc',
       'credential': 'webrtc'
     }]
