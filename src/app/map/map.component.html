@@ -42,8 +42,8 @@
             <!-- Map as desktop-->
             <div id="MapDiv" #dragBounds>
                 <mat-slider id="slider" class="slider leaflet-left leaflet-top leaflet-control" [max]="maxZoom" [min]="minZoom" [step]="step"
-                    discrete [(ngModel)]="Zoom" (input)="adjustZoom($event.value)">
-                    <input matSliderThumb #slider>
+                    discrete (input)="adjustZoom($event.value)" disabled>
+                    <input matSliderThumb [(ngModel)]="Zoom" #slider>
                 </mat-slider>
 
                 <!--Draggable windows-->

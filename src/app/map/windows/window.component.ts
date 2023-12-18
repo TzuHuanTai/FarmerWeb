@@ -8,11 +8,10 @@ import { WindowService } from './window.service';
 })
 
 export class WindowComponent implements OnInit, AfterViewInit, OnDestroy {
-
     @Input('title') title: string;
     @Input('index') index: number;
     @Input('bound') limitedBound: HTMLDivElement;
-    @ViewChild('dropTarget') dropTarget: ElementRef;
+    @ViewChild('handle') handle: ElementRef;
 
     constructor(public windowService: WindowService) {
     }
@@ -22,25 +21,12 @@ export class WindowComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     ngAfterViewInit() {
-        if (this.dropTarget) {
-            const dropTarget = this.dropTarget.nativeElement;
-            dropTarget.addEventListener('drop', dropped);
-            dropTarget.addEventListener('dragenter', cancelDefault);
-            dropTarget.addEventListener('dragover', cancelDefault);
-            console.log(dropTarget);
-
-            function dropped(e) {
-                console.log('dropped');
-                cancelDefault(e);
-                // let id = e.dataTransfer.getData('text/plain')
-                // e.target.appendChild(document.querySelector('#' + id))
-            }
-
-            function cancelDefault(e) {
+        if (this.handle) {
+            const handle = this.handle.nativeElement;
+            handle.addEventListener('click', (e: Event) => {
                 e.preventDefault();
                 e.stopPropagation();
-                return false;
-            }
+            });
         }
     }
 
