@@ -20,12 +20,6 @@ import { WindowService } from './windows/window.service';
 import { MapService } from './map.service';
 import { startWith } from '../../../node_modules/rxjs/operators';
 
-/** jquery有時候不太穩定，同樣的程式碼有時候讀得到有時候讀不到
- * 解法：設定TimeOut，等所有dom準備完畢再上場
- * 結論：不爽用！
- * declare var $: any;
- * import 'jquery-ui/ui/widgets/draggable.js';
-*/
 
 @Component({
     selector: 'app-map',
