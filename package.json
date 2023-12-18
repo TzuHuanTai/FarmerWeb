@@ -28,7 +28,7 @@
     "@ng-bootstrap/ng-bootstrap": "^16.0.0",
     "@popperjs/core": "^2.10.2",
     "@videojs/http-streaming": "^1.4.2",
-    "angular2-draggable": "^2.0.1",
+    "angular2-draggable": "^16.0.0",
     "autoprefixer": "10.4.5",
     "bootstrap": "^5.0.0",
     "highcharts": "^9.1.2",

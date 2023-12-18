@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { IMemberRole } from '../../interface/system_auth/I_member_role';
+import { IMemberRole } from '../../interface/system_auth/i_member_role';
 import { environment } from '../../environments/environment';
 
 @Injectable()
