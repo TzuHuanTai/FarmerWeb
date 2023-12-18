@@ -16,47 +16,34 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavMenuComponent,
-    AppRoutingComponents,
-  ],
-  imports: [
-    BrowserModule,            // must put first
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgbModule,
-    AppRoutingModule,         // component 路徑樹狀結構
-    BrowserAnimationsModule,  // angular material animation
-    SharedMaterialModule,     // used material
-    ServiceWorkerModule.register('ngsw-worker.js', { 
-      enabled: environment.production,
-      registrationStrategy: "registerImmediately",
-    })
-  ],
-  providers: [
-    NgbDropdown,
-    {
-      provide: HTTP_INTERCEPTORS,  // 過濾封包
-      useClass: AuthInterceptor,
-      multi: true,
-    }
-  ],
-  bootstrap: [AppComponent],
-  // 動態加入components，需要在 @NgModule中加入entryComponents把動態components放入
-  // 這裡通常是用來宣告不通過Route動態加入到DOM中的元件，指定在這裡的元件將會在這個模組定義的時候進行編譯
-  // Angular會建立ComponentFactory然後存在ComponentFactoryResolver
-  // Angular 官網說明：
-  // An entry component is any component that Angular loads imperatively,
-  // (which means you’re not referencing it in the template), by type.
-  // You specify an entry component by bootstrapping it in an NgModule,
-  // or including it in a routing definition.
-  entryComponents: [
-    AppRoutingComponents,
-    MapComponents[0],
-    SystemComponents[0],
-  ]
+    declarations: [
+        AppComponent,
+        NavMenuComponent,
+        AppRoutingComponents,
+    ],
+    imports: [
+        BrowserModule,
+        HttpClientModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NgbModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        SharedMaterialModule,
+        ServiceWorkerModule.register('ngsw-worker.js', {
+            enabled: environment.production,
+            registrationStrategy: "registerImmediately",
+        })
+    ],
+    providers: [
+        NgbDropdown,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: AuthInterceptor,
+            multi: true,
+        }
+    ],
+    bootstrap: [AppComponent]
 })
 
 export class AppModule { }

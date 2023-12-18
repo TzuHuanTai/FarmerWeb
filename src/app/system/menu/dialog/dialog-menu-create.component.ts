@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Menu } from '../../../../interface/system_auth/menu';
 import { MenuService } from '../../../../api/system_auth/menu.service';
-import { Validators, FormGroup, FormArray, FormBuilder } from '@angular/forms';
+import { Validators, UntypedFormGroup, UntypedFormArray, UntypedFormBuilder } from '@angular/forms';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -13,11 +13,11 @@ import { environment } from '../../../../environments/environment';
 
 export class DialogMenuCreateComponent {
 
-    addMenuForm: FormGroup;
+    addMenuForm: UntypedFormGroup;
 
     constructor(
         @Inject(MAT_DIALOG_DATA) public menuList: Menu[],
-        public fb: FormBuilder,
+        public fb: UntypedFormBuilder,
         public dialogRef: MatDialogRef<DialogMenuCreateComponent>,
         private menuService: MenuService,
     ) {
@@ -45,13 +45,13 @@ export class DialogMenuCreateComponent {
 
     addMenuList() {
         // add address to the list
-        const control = <FormArray>this.addMenuForm.controls['containLists'];
+        const control = <UntypedFormArray>this.addMenuForm.controls['containLists'];
         control.push(this.initaddMenuForm());
     }
 
     removeMenuList(i: number) {
         // remove address from the list
-        const control = <FormArray>this.addMenuForm.controls['containLists'];
+        const control = <UntypedFormArray>this.addMenuForm.controls['containLists'];
         control.removeAt(i);
     }
 

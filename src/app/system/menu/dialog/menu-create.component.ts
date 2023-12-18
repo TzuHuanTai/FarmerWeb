@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { Menu } from '../../../../interface/system_auth/menu';
 
 @Component({
@@ -11,7 +11,7 @@ import { Menu } from '../../../../interface/system_auth/menu';
 
 export class MenuCreateComponent {
     // we will pass in address, named as group when Input, from MenuComponent
-    @Input('group') public menuForm: FormGroup;
+    @Input('group') public menuForm: UntypedFormGroup;
     @Input('menuList') public menuList: Menu[];
 
     constructor() {}

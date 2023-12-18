@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { startWith } from 'rxjs/operators';
 
 import { v34 } from '../../../api/ApiKmv/v34';
@@ -19,7 +19,7 @@ import { MapService } from '../map.service';
 
 export class DrawerSupplyChainComponent implements OnInit {
     sideCompanyList: v34[] = [];
-    CompanyFilter = new FormControl();
+    CompanyFilter = new UntypedFormControl();
     filteredCompany: v34[];
 
     constructor(private REST_v34: V34Service, public dialog: MatDialog, private _MapService: MapService) {

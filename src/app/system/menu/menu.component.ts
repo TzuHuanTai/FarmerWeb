@@ -4,7 +4,7 @@ import { Menu } from '../../../interface/system_auth/menu';
 import { MenuService } from '../../../api/system_auth/menu.service';
 import { Observable } from 'rxjs';
 import { startWith, tap, map } from 'rxjs/operators';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -32,13 +32,13 @@ export class MenuComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   // Parameters of filters
-  menuIdFilter = new FormControl();
-  pathFilter = new FormControl();
-  menuTextFilter = new FormControl();
-  sortNoFilter = new FormControl();
-  selectorFilter = new FormControl();
-  componentFilter = new FormControl();
-  rootMenuIdFilter = new FormControl();
+  menuIdFilter = new UntypedFormControl();
+  pathFilter = new UntypedFormControl();
+  menuTextFilter = new UntypedFormControl();
+  sortNoFilter = new UntypedFormControl();
+  selectorFilter = new UntypedFormControl();
+  componentFilter = new UntypedFormControl();
+  rootMenuIdFilter = new UntypedFormControl();
   filterValues = { menuId: '', path: '', menuText: '', sortNo: '', selector: '', component: '', rootMenuId: '' };
   menuIdFilteredOptions: Observable<string[]>;
   pathFilteredOptions: Observable<string[]>;
