@@ -92,20 +92,15 @@ export const SystemComponents = [
 ];
 
 @NgModule({
-  imports: [
-      CommonModule,
-      RouterModule,
-      FormsModule,
-      ReactiveFormsModule,
-      SharedMaterialModule,
-      SystemRoutingModule,
-  ],
-  declarations: SystemComponents,
-  entryComponents: [
-      // 加在這裡root NgModule吃不到，只有此NgModule讀得到，所以兩邊都要加
-      // 未來版本可能會改進 https://github.com/angular/angular/issues/14324#issuecomment-481898762
-      SystemComponents,
-  ],
+    imports: [
+        CommonModule,
+        RouterModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SharedMaterialModule,
+        SystemRoutingModule,
+    ],
+    declarations: SystemComponents
 })
 
 export class SystemModule { }

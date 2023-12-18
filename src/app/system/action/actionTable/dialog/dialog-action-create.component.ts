@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Validators, FormGroup, FormArray, FormBuilder } from '@angular/forms';
+import { Validators, UntypedFormGroup, UntypedFormArray, UntypedFormBuilder } from '@angular/forms';
 import { Action } from '../../../../../interface/system_auth/action';
 import { ActionService } from '../../../../../api/system_auth/action.service';
 
@@ -12,10 +12,10 @@ import { ActionService } from '../../../../../api/system_auth/action.service';
 
 export class DialogActionCreateComponent {
 
-    addActionForm: FormGroup;
+    addActionForm: UntypedFormGroup;
 
     constructor(
-        public fb: FormBuilder,
+        public fb: UntypedFormBuilder,
         public dialogRef: MatDialogRef<DialogActionCreateComponent>,
         private actionService: ActionService,
         @Inject(MAT_DIALOG_DATA) public ActionList: Action[],
@@ -40,13 +40,13 @@ export class DialogActionCreateComponent {
 
     addActionList() {
         // add address to the list
-        const control = <FormArray>this.addActionForm.controls['containLists'];
+        const control = <UntypedFormArray>this.addActionForm.controls['containLists'];
         control.push(this.initaddActionForm());
     }
 
     removeActionList(i: number) {
         // remove address from the list
-        const control = <FormArray>this.addActionForm.controls['containLists'];
+        const control = <UntypedFormArray>this.addActionForm.controls['containLists'];
         control.removeAt(i);
     }
 

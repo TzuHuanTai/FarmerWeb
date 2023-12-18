@@ -1,8 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 
 @Component({
-    moduleId: module.id,
     selector: 'action-create-unit',
     templateUrl: 'action-create.component.html',
     styleUrls: ['../../action.component.css'],
@@ -10,7 +9,7 @@ import { FormGroup } from '@angular/forms';
 
 export class ActionCreateComponent {
     // we will pass in address, named as group when Input, from ActionComponent
-    @Input('group') public actionForm: FormGroup;
+    @Input('group') public actionForm: UntypedFormGroup;
     methodList: string[] = ['GET', 'POST', 'PUT', 'DELETE'];
 
     constructor() { }

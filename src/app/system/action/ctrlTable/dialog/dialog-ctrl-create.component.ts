@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { FormGroup, FormControl } from '@angular/forms';
+import { UntypedFormGroup, UntypedFormControl } from '@angular/forms';
 import { Ctrl } from '../../../../../interface/system_auth/ctrl';
 import { CtrlService } from '../../../../../api/system_auth/ctrl.service';
 import { environment } from '../../../../../environments/environment';
@@ -15,11 +15,11 @@ import { environment } from '../../../../../environments/environment';
 
 export class DialogCtrlCreateComponent {
 
-    ctrlForm: FormGroup = new FormGroup({
-        id: new FormControl(),
-        name: new FormControl(),
-        description: new FormControl(),
-        appId: new FormControl({ value: environment.appId }),
+    ctrlForm: UntypedFormGroup = new UntypedFormGroup({
+        id: new UntypedFormControl(),
+        name: new UntypedFormControl(),
+        description: new UntypedFormControl(),
+        appId: new UntypedFormControl({ value: environment.appId }),
     });
 
     constructor(

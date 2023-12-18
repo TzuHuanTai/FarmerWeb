@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -30,9 +30,9 @@ export class CtrlTableComponent implements OnInit {
     ctrlDisplayedColumns: string[] = ['id', 'name', 'description', 'actions'];
 
     // Parameters of filters
-    idFilter = new FormControl();
-    nameFilter = new FormControl();
-    descriptionFilter = new FormControl();
+    idFilter = new UntypedFormControl();
+    nameFilter = new UntypedFormControl();
+    descriptionFilter = new UntypedFormControl();
     filterValues = { ctrlId: '', name: '', description: '' };
     idFilteredOptions: Observable<string[]>;
     nameFilteredOptions: Observable<string[]>;

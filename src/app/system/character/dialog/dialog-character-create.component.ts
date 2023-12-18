@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { Validators, FormGroup, FormArray, FormBuilder } from '@angular/forms';
+import { Validators, UntypedFormGroup, UntypedFormArray, UntypedFormBuilder } from '@angular/forms';
 import { RoleGroup } from '../../../../interface/system_auth/role_group';
 import { RoleGroupService } from '../../../../api/system_auth/role_group.service';
 
@@ -12,10 +12,10 @@ import { RoleGroupService } from '../../../../api/system_auth/role_group.service
 
 export class DialogCharacterCreateComponent {
 
-    addRoleForm: FormGroup;
+    addRoleForm: UntypedFormGroup;
 
     constructor(
-        public fb: FormBuilder,
+        public fb: UntypedFormBuilder,
         public dialogRef: MatDialogRef<DialogCharacterCreateComponent>,
         private roleGroupService: RoleGroupService,
         @Inject(MAT_DIALOG_DATA) public roleList: RoleGroup[],
@@ -47,13 +47,13 @@ export class DialogCharacterCreateComponent {
 
     addRoleList() {
         // add address to the list
-        const control = <FormArray>this.addRoleForm.controls['containLists'];
+        const control = <UntypedFormArray>this.addRoleForm.controls['containLists'];
         control.push(this.initaddRoleForm());
     }
 
     removeRoleList(i: number) {
         // remove address from the list
-        const control = <FormArray>this.addRoleForm.controls['containLists'];
+        const control = <UntypedFormArray>this.addRoleForm.controls['containLists'];
         control.removeAt(i);
     }
 

@@ -34,8 +34,8 @@
             </mat-slide-toggle>
         </div>
         <div class="btn-led-intensity">
-            <mat-slider class="example-margin" [thumbLabel]="true" [tickInterval]="'auto'" [vertical]="isFullscreen"
-                (change)="changeIntensityOfLed($event.value)">
+            <mat-slider class="example-margin" discrete showTickMarks (change)="changeIntensityOfLed($event.value)">
+                <input matSliderThumb>
             </mat-slider>
         </div>
         <div class="btn-fan">

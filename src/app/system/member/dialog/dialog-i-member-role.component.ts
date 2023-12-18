@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree';
 import { Observable, of } from 'rxjs';
 import { Member } from '../../../../interface/system_auth/member';
-import { IMemberRole } from '../../../../interface/system_auth/I_member_role';
+import { IMemberRole } from '../../../../interface/system_auth/i_member_role';
 import { RoleGroupNode, RoleGroupFlatNode } from '../../../../interface/system_auth/vm_i_role';
 import { IMemberRoleService } from '../../../../api/system_auth/i_member_role.service';
 
