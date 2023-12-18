@@ -3,7 +3,6 @@ import { UntypedFormGroup } from '@angular/forms';
 import { RoleGroup } from '../../../../interface/system_auth/role_group';
 
 @Component({
-    moduleId: module.id,
     selector: 'character-create-unit',
     templateUrl: 'chatacter-create.component.html',
     styleUrls: ['../character.component.css']

@@ -3,7 +3,6 @@ import { UntypedFormGroup } from '@angular/forms';
 import { Menu } from '../../../../interface/system_auth/menu';
 
 @Component({
-    moduleId: module.id,
     selector: 'menu-create-unit',
     templateUrl: 'menu-create.component.html',
     styleUrls: ['../menu.component.css']

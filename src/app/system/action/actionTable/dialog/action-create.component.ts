@@ -2,7 +2,6 @@ import { Component, Input } from '@angular/core';
 import { UntypedFormGroup } from '@angular/forms';
 
 @Component({
-    moduleId: module.id,
     selector: 'action-create-unit',
     templateUrl: 'action-create.component.html',
     styleUrls: ['../../action.component.css'],
