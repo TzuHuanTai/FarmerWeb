@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { GpioService } from '../../api/raspberry/rasp_gpio.service';
 import { LiveService } from './live.service';
-import { Codecs } from '../../extention/RTCPeerConnection';
+import { Codecs } from '../../extention/RTCPeerConnectionBuilder';
 
 @Component({
     selector: 'app-live',
