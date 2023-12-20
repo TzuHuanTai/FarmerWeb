@@ -1,5 +1,5 @@
-// ng build --prod  or add argument --environment=prod
-// ng serve --prod
+import { IClientOptions } from "mqtt";
+
 export const environment = {
   production: true,
   authUrl: `https://${location.hostname}/api`,
@@ -18,4 +18,13 @@ export const environment = {
       'credential': 'webrtc'
     }]
   },
+};
+
+export const mqClientOptions: IClientOptions = {
+  hostname: `${location.hostname}`,
+  port: 8083,
+  username: 'hakunamatata',
+  password: 'wonderful',
+  protocol: 'wss',
+  path: '/mqtt'
 };

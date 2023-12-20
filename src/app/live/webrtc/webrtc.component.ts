@@ -1,26 +1,11 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, Input } from '@angular/core';
-import * as signalR from '@microsoft/signalr';
 import { Subject, takeUntil } from 'rxjs';
 import { LiveService } from '../live.service';
-import { environment } from '../../../environments/environment';
-import '../../../extention/RTCPeerConnection';
-import { Codecs } from '../../../extention/RTCPeerConnection';
-
-enum CommandType {
-    CONNECT,
-    RECORD,
-    STREAM,
-    UNKNOWN
-};
-
-class Command {
-    type: CommandType;
-    message: string;
-    constructor(type: CommandType, message: string) {
-        this.type = type;
-        this.message = message;
-    }
-}
+import { environment, mqClientOptions } from '../../../environments/environment';
+import {
+    Codecs, MqttClient, RTCPeerConnectionBuilder,
+    SignalingService, SignalrClient, CommandType, Command
+} from '../../../extention/RTCPeerConnectionBuilder';
 
 @Component({
     selector: 'video-webrtc',
@@ -30,25 +15,18 @@ class Command {
 export class WebrtcComponent implements OnInit, OnDestroy {
     /** input parameter */
     @Input() codec: Codecs;
-    @Input() signalingUrl: string = environment.signalingUrl;
 
     /** WebRTC element */
     peerConnection: RTCPeerConnection;
     dataChannel: RTCDataChannel;
     reconnectingInterval: NodeJS.Timer;
     forceInterruptInterval: NodeJS.Timer;
-    signalingServer: signalR.HubConnection;
+    signalingClient: SignalingService;
     @ViewChild('webrtcVideo', { static: true }) webrtcVideo: ElementRef<HTMLVideoElement>;
 
     unsubscriber: Subject<boolean> = new Subject();
 
-    constructor(private liveService: LiveService) {
-        this.signalingServer = new signalR.HubConnectionBuilder()
-            .withUrl(this.signalingUrl)
-            .configureLogging(signalR.LogLevel.Information)
-            .withAutomaticReconnect()
-            .build();
-    }
+    constructor(private liveService: LiveService) { }
 
     ngOnInit() {
         this.liveService.connectRTCPeerSubject$.pipe(takeUntil(this.unsubscriber)).subscribe((onoff: boolean) => {
@@ -59,7 +37,7 @@ export class WebrtcComponent implements OnInit, OnDestroy {
                     this.liveService.connectRTCPeer(false);
                 }, 20000);
             } else {
-                if (this.dataChannel?.readyState === 'open'){
+                if (this.dataChannel?.readyState === 'open') {
                     let cmd = new Command(CommandType.CONNECT, String(onoff));
                     this.dataChannel.send(JSON.stringify(cmd));
                 }
@@ -75,29 +53,33 @@ export class WebrtcComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.closeRTCPeer();
+        this.signalingClient?.end();
         this.unsubscriber.next(true);
         this.unsubscriber.complete();
     }
 
-    startRTCPeer() {
+    async startSignaling() {
+        const signalingClientBuilder = (protocal: string): SignalingService => {
+            if (protocal === 'signalr') {
+                return new SignalrClient(environment.signalingUrl);
+            } else if (protocal === 'mqtt') {
+                return new MqttClient(mqClientOptions);
+            } else {
+                return null;
+            }
+        };
+        const signalingClient = signalingClientBuilder('signalr');
+        await signalingClient.start();
+
+        return signalingClient;
+    }
+
+    async startRTCPeer() {
         if (this.peerConnection) {
             this.closeRTCPeer();
         }
 
-        if (!this.peerConnection) {
-            this.peerConnection = this.createPeerConnection();
-
-            let playPromise = this.webrtcVideo.nativeElement.play();
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    // Automatic playback started!
-                    // Show playing UI.
-                }).catch(error => {
-                    // Auto-play was prevented
-                    // Show paused UI.
-                });
-            }
-        }
+        [this.peerConnection, this.dataChannel] = await this.createPeerConnection();
     }
 
     closeRTCPeer() {
@@ -112,71 +94,28 @@ export class WebrtcComponent implements OnInit, OnDestroy {
         clearInterval(this.forceInterruptInterval);
     }
 
-    private createPeerConnection(): RTCPeerConnection {
-        const peer = new RTCPeerConnection(environment.peerConnectionConfig);
+    private async createPeerConnection(): Promise<[RTCPeerConnection, RTCDataChannel]> {
+        this.signalingClient = await this.startSignaling();
 
-        this.dataChannel = peer.createDataChannel("cmd_channel", { negotiated: true, ordered: true, id: 0 });
-        this.dataChannel.onmessage = (ev) => this.onReceiveMessage(ev);
-
-        peer.onicecandidate = ev => {
-            if (peer.type == 'answer') {
-                console.log('answerLocalIceToRemote', ev.candidate);
-                peer.answerLocalIceToRemote(ev.candidate);
-            } else if (peer.type == 'offer') {
-                console.log('offerLocalIceToRemote', ev.candidate);
-                peer.offerLocalIceToRemote(ev.candidate);
-            }
+        const OnConnected = (ev) => {
+            clearInterval(this.forceInterruptInterval);
+            this.liveService.isConnected(true);
+            this.signalingClient.end();
         };
 
-        peer.onconnectionstatechange = ev => {
-            console.log("onconnectionstatechange: ", ev);
+        const OnDisconnectedOrFailed = (ev) => {
+            this.liveService.isConnected(false);
+            this.signalingClient.end();
         };
 
-        // peer.ondatachannel = (e: RTCDataChannelEvent) => {
-        //     console.log('conneceted channel: ' + e.channel.label);
-        //     e.channel.onmessage = (ev) => this.onReceiveMessage(ev);
-        //     this.dataChannels.push(e.channel);
-        // };
-
-        peer.ontrack = (ev) => {
-            if (this.webrtcVideo.nativeElement.srcObject !== ev.streams[0]) {
-                this.webrtcVideo.nativeElement.srcObject = ev.streams[0];
-                console.log('received remote stream', ev);
-            }
-        };
-
-        peer.onconnectionstatechange = (ev) => {
-            this.liveService.setRTCStatus(peer.connectionState);
-            if (peer.connectionState === 'connected') {
-                clearInterval(this.forceInterruptInterval);
-                this.liveService.isConnected(true);
-            } else if (peer.connectionState === 'disconnected' || peer.connectionState === 'failed') {
-                // this.reconnectPeerConnection();
-                this.liveService.isConnected(false);
-            }
-        };
-
-        peer.addTransceiver('video', { direction: 'recvonly' });
-        peer.addTransceiver('audio', { direction: 'recvonly' });
-
-        return peer.setSignalingUrl(this.signalingServer)
-            .listenTopics("offer")
+        const peerBuilder = new RTCPeerConnectionBuilder(this.signalingClient);
+        const peer = peerBuilder.setType("offer")
+            .setOnConnected(OnConnected)
+            .setOnDisconnectedOrFailed(OnDisconnectedOrFailed)
+            .setDstElement(this.webrtcVideo.nativeElement)
             .setCodec(this.codec)
             .build();
-    }
 
-    private reconnectPeerConnection() {
-        this.reconnectingInterval = setInterval(
-            () => {
-                console.log(`WebRTC reconnect!!!`);
-                this.startRTCPeer();
-            },
-            5000,
-        );
-    }
-
-    private onReceiveMessage(event: MessageEvent) {
-        // Todo: recieve the position data from server.
-        console.log(new TextDecoder('utf-8').decode(event.data));
+        return peer;
     }
 }
