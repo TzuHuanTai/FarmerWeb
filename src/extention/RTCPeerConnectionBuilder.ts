@@ -1,6 +1,6 @@
 import { HubConnection, HubConnectionBuilder, HubConnectionState, LogLevel } from '@microsoft/signalr';
 import mqtt from 'mqtt/dist/mqtt';
-import { environment } from 'src/environments/environment';
+import { environment, mqClientOptions } from 'src/environments/environment';
 
 enum SignalingTopic {
     AnswerSDP = 'AnswerSDP',
@@ -16,6 +16,11 @@ enum Codecs {
     VP8 = 'VP8',
     VP9 = 'VP9',
     AV1 = 'AV1'
+}
+
+enum ProtocolType {
+    SIGNALR = 'SignalR',
+    MQTT = 'MQTT'
 }
 
 enum CommandType {
@@ -128,17 +133,33 @@ interface SignalingConnection {
 
 class RTCPeerConnectionBuilder implements SignalingConnection {
     private type: 'offer' | 'answer';
+    private protocal: ProtocolType;
     private connectionId: string;
-    connection: SignalingService;
+    private connection: SignalingService;
     private codec: Codecs;
     private dstElement: HTMLVideoElement;
-    peer: RTCPeerConnection;
+    private peer: RTCPeerConnection;
     private dataChannel: RTCDataChannel;
     private onConnected: ((ev: Event) => any) | null;
     private onDisconnectedOrFailed: ((ev: Event) => any) | null;
 
-    constructor(connection: SignalingService) {
-        this.connection = connection;
+    constructor(protocal: ProtocolType) {
+        this.protocal = protocal;
+    }
+
+    async startSignaling(protocal: ProtocolType) {
+        const signalingClient = ((protocal: string): SignalingService => {
+            if (protocal === ProtocolType.SIGNALR) {
+                return new SignalrClient(environment.signalingUrl);
+            } else if (protocal === ProtocolType.MQTT) {
+                return new MqttClient(mqClientOptions);
+            } else {
+                return null;
+            }
+        })(protocal);
+        await signalingClient.start();
+
+        return signalingClient;
     }
 
     createPeer() {
@@ -179,14 +200,17 @@ class RTCPeerConnectionBuilder implements SignalingConnection {
                     break;
                 case "connected":
                     this.onConnected(ev);
+                    this.connection.end();
                     break;
                 case "disconnected":
                     this.onDisconnectedOrFailed(ev);
+                    this.connection.end();
                     break;
                 case "closed":
                     break;
                 case "failed":
                     this.onDisconnectedOrFailed(ev);
+                    this.connection.end();
                     break;
                 default:
                     break;
@@ -279,13 +303,6 @@ class RTCPeerConnectionBuilder implements SignalingConnection {
 
     setType(type: 'offer' | 'answer' = 'offer') {
         this.type = type;
-
-        if (type == 'answer') {
-            this.listenOfferTopics();
-        } else if (type == 'offer') {
-            this.listenAnswerTopics();
-        }
-
         return this;
     };
 
@@ -354,11 +371,13 @@ class RTCPeerConnectionBuilder implements SignalingConnection {
         return internalFunc(orgsdp);
     }
 
-    build(): [RTCPeerConnection, RTCDataChannel] {
-
-        if (this.type == 'answer') {
+    async build(): Promise<[RTCPeerConnection, RTCDataChannel]> {
+        this.connection = await this.startSignaling(this.protocal);
+        if (this.type === 'answer') {
+            this.listenOfferTopics();
             this.connection.publish(SignalingTopic.JoinAsServer);
-        } else if (this.type == 'offer') {
+        } else if (this.type === 'offer') {
+            this.listenAnswerTopics();
             this.connection.publish(SignalingTopic.JoinAsClient);
         }
 
@@ -371,5 +390,5 @@ class RTCPeerConnectionBuilder implements SignalingConnection {
 
 export {
     Codecs, SignalingService, SignalrClient, MqttClient,
-    RTCPeerConnectionBuilder, CommandType, Command
+    RTCPeerConnectionBuilder, ProtocolType, CommandType, Command
 };
