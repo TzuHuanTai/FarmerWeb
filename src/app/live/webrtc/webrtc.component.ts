@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, Input } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 import { LiveService } from '../live.service';
-import { environment, mqClientOptions } from '../../../environments/environment';
 import {
-    Codecs, MqttClient, RTCPeerConnectionBuilder,
-    SignalingService, SignalrClient, CommandType, Command
+    Codecs, RTCPeerConnectionBuilder,
+    CommandType, Command, ProtocolType
 } from '../../../extention/RTCPeerConnectionBuilder';
 
 @Component({
@@ -21,7 +20,6 @@ export class WebrtcComponent implements OnInit, OnDestroy {
     dataChannel: RTCDataChannel;
     reconnectingInterval: NodeJS.Timer;
     forceInterruptInterval: NodeJS.Timer;
-    signalingClient: SignalingService;
     @ViewChild('webrtcVideo', { static: true }) webrtcVideo: ElementRef<HTMLVideoElement>;
 
     unsubscriber: Subject<boolean> = new Subject();
@@ -53,25 +51,8 @@ export class WebrtcComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.closeRTCPeer();
-        this.signalingClient?.end();
         this.unsubscriber.next(true);
         this.unsubscriber.complete();
-    }
-
-    async startSignaling() {
-        const signalingClientBuilder = (protocal: string): SignalingService => {
-            if (protocal === 'signalr') {
-                return new SignalrClient(environment.signalingUrl);
-            } else if (protocal === 'mqtt') {
-                return new MqttClient(mqClientOptions);
-            } else {
-                return null;
-            }
-        };
-        const signalingClient = signalingClientBuilder('signalr');
-        await signalingClient.start();
-
-        return signalingClient;
     }
 
     async startRTCPeer() {
@@ -84,31 +65,25 @@ export class WebrtcComponent implements OnInit, OnDestroy {
 
     closeRTCPeer() {
         this.dataChannel?.close();
-
-        if (this.peerConnection) {
-            this.peerConnection.close();
-            this.liveService.isConnected(false);
-            this.liveService.setRTCStatus(this.peerConnection.connectionState);
-        }
+        this.peerConnection?.close();
+        this.liveService.isConnected(false);
+        this.liveService.setRTCStatus(this.peerConnection?.connectionState);
         this.peerConnection = null;
+
         clearInterval(this.forceInterruptInterval);
     }
 
     private async createPeerConnection(): Promise<[RTCPeerConnection, RTCDataChannel]> {
-        this.signalingClient = await this.startSignaling();
-
         const OnConnected = (ev) => {
             clearInterval(this.forceInterruptInterval);
             this.liveService.isConnected(true);
-            this.signalingClient.end();
         };
 
         const OnDisconnectedOrFailed = (ev) => {
             this.liveService.isConnected(false);
-            this.signalingClient.end();
         };
 
-        const peerBuilder = new RTCPeerConnectionBuilder(this.signalingClient);
+        const peerBuilder = new RTCPeerConnectionBuilder(ProtocolType.SIGNALR);
         const peer = peerBuilder.setType("offer")
             .setOnConnected(OnConnected)
             .setOnDisconnectedOrFailed(OnDisconnectedOrFailed)
