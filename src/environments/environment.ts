@@ -21,10 +21,10 @@ export const environment = {
 };
 
 export const mqClientOptions: IClientOptions = {
-  hostname: 'rich-greenhouse.ddns.net',
+  hostname: 'greenhouse',
   port: 8083,
   username: 'hakunamatata',
   password: 'wonderful',
-  protocol: 'wss',
+  protocol: 'ws',
   path: '/mqtt'
 };
