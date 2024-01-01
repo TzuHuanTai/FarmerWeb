@@ -93,7 +93,7 @@ class MqttClient implements SignalingService {
     start(): void {
         this.connection = mqtt.connect(this.options);
         this.connection.on('message', (topic, message) => {
-            this.subscribedFnMap.get(topic)(JSON.parse(message.toString()));
+            this.subscribedFnMap.get(SignalingTopic[topic])(JSON.parse(message.toString()));
         });
     }
 

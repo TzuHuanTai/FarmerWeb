@@ -22,7 +22,7 @@ export const environment = {
 
 export const mqClientOptions: IClientOptions = {
   hostname: `${location.hostname}`,
-  port: 8083,
+  port: 443,
   username: 'hakunamatata',
   password: 'wonderful',
   protocol: 'wss',
