@@ -83,7 +83,7 @@ export class WebrtcComponent implements OnInit, OnDestroy {
             this.liveService.isConnected(false);
         };
 
-        const peerBuilder = new RTCPeerConnectionBuilder(ProtocolType.SIGNALR);
+        const peerBuilder = new RTCPeerConnectionBuilder(ProtocolType.MQTT);
         const peer = peerBuilder.setType("offer")
             .setOnConnected(OnConnected)
             .setOnDisconnectedOrFailed(OnDisconnectedOrFailed)
