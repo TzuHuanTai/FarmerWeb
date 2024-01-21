@@ -104,7 +104,7 @@ class MqttClient implements SignalingService {
     }
 
     subscribe(topic: SignalingTopic, callback: (...args: any[]) => any): void {
-        this.connection.subscribe(topic);
+        this.connection.subscribe(topic, { qos: 0, nl: true });
         this.subscribedFnMap.set(topic, callback);
     }
 
@@ -284,12 +284,15 @@ class RTCPeerConnectionBuilder implements SignalingConnection {
 
     listenOfferTopics() {
         this.connection.subscribe(SignalingTopic.OfferSDP, (recvDesc: RTCSessionDescriptionInit) => {
+            console.log("setRemoteDescription: ", recvDesc);
             this.peer.setRemoteDescription(recvDesc);
-            this.peer.createAnswer().then(
-                desc => {
-                    this.answerDescription(desc);
-                }
-            );
+            if (recvDesc.type === "offer") {
+                this.peer.createAnswer().then(
+                    desc => {
+                        this.answerDescription(desc);
+                    }
+                );
+            }
         });
 
         this.connection.subscribe(SignalingTopic.OfferICE, (recvCandidate: RTCIceCandidate) => {
@@ -373,12 +376,17 @@ class RTCPeerConnectionBuilder implements SignalingConnection {
 
     async build(): Promise<[RTCPeerConnection, RTCDataChannel]> {
         this.connection = await this.startSignaling(this.protocal);
-        if (this.type === 'answer') {
+
+        if (this.protocal === ProtocolType.SIGNALR) {
+            if (this.type === 'answer') {
+                this.listenOfferTopics();
+                this.connection.publish(SignalingTopic.JoinAsServer);
+            } else if (this.type === 'offer') {
+                this.listenAnswerTopics();
+                this.connection.publish(SignalingTopic.JoinAsClient);
+            }
+        } else if (this.protocal === ProtocolType.MQTT) {
             this.listenOfferTopics();
-            this.connection.publish(SignalingTopic.JoinAsServer);
-        } else if (this.type === 'offer') {
-            this.listenAnswerTopics();
-            this.connection.publish(SignalingTopic.JoinAsClient);
         }
 
         this.createPeer();

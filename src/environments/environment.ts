@@ -26,5 +26,6 @@ export const mqClientOptions: IClientOptions = {
   username: 'hakunamatata',
   password: 'wonderful',
   protocol: 'ws',
-  path: '/mqtt'
+  path: '/mqtt',
+  protocolVersion: 5,
 };
